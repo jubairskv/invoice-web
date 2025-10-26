@@ -155,6 +155,8 @@ function Home() {
     if (fileInput) {
       fileInput.value = "";
     }
+    // Also clear any form field that was auto-populated
+    // This will be handled by the form's setFieldValue if needed
   };
 
   // Handle drag and drop
@@ -466,10 +468,14 @@ function Home() {
                     htmlFor="pdf-upload"
                     className="bg-white border-2 border-gray-400 text-black px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors mb-4 flex items-center justify-center cursor-pointer w-32 shadow-lg whitespace-nowrap"
                     onClick={() => {
-                      // Ensure the file input is triggered
+                      // Clear the file input first to ensure it opens properly
                       const fileInput = document.getElementById("pdf-upload");
                       if (fileInput) {
-                        fileInput.click();
+                        fileInput.value = "";
+                        // Use setTimeout to ensure the reset happens before opening dialog
+                        setTimeout(() => {
+                          fileInput.click();
+                        }, 10);
                       }
                     }}
                   >
