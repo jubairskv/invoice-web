@@ -10,8 +10,8 @@ import {
   FaChevronDown,
   FaPlus,
   FaSignOutAlt,
-  FaArrowRight,
 } from "react-icons/fa";
+import { VscSend } from "react-icons/vsc";
 import { FiUpload, FiCheck } from "react-icons/fi";
 import { Document, Page, pdfjs } from "react-pdf";
 
@@ -859,7 +859,7 @@ function Home() {
                         }`}
                         placeholder="Add any additional comments..."
                       />
-                      <FaArrowRight className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                      <VscSend className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                       {errors.comments && touched.comments && (
                         <p className="text-red-500 text-sm mt-1">
                           {errors.comments}
