@@ -5,7 +5,6 @@ import * as Yup from "yup";
 import {
   FaBuilding,
   FaFileInvoice,
-  FaComment,
   FaCalendarAlt,
   FaChevronDown,
   FaPlus,
@@ -14,6 +13,13 @@ import {
 import { VscSend } from "react-icons/vsc";
 import { TbMessage } from "react-icons/tb";
 import { FiUpload, FiCheck } from "react-icons/fi";
+import { pdfjs } from "react-pdf";
+import PdfComponent from "./pdfcomp";
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.mjs",
+  import.meta.url
+).toString();
 
 // Enhanced validation schema with comprehensive validation
 const validationSchema = Yup.object({
@@ -400,7 +406,7 @@ function Home() {
 
           <div className="flex min-h-screen">
             {/* Left Panel - Invoice Upload */}
-            <div className="w-1/3 bg-gray-200 p-8">
+            <div className="w-[50%] bg-gray-200 p-8">
               <div
                 className={`bg-white border-2 border-dashed rounded-xl p-12 text-center transition-colors cursor-pointer ${
                   isDragOver
@@ -470,6 +476,7 @@ function Home() {
                         </div>
                       </div>
                     </div>
+                    <PdfComponent fileUrl={fileUrl} />
                   </div>
                 ) : (
                   <div className="w-50 h-50 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
