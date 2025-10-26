@@ -10,6 +10,7 @@ import {
   FaChevronDown,
   FaPlus,
   FaSignOutAlt,
+  FaArrowRight,
 } from "react-icons/fa";
 import { FiUpload, FiCheck } from "react-icons/fi";
 import { Document, Page, pdfjs } from "react-pdf";
@@ -162,34 +163,36 @@ function Home() {
           {/* Header */}
           <div className="bg-white border-b border-gray-200 px-8 py-6">
             <div className="flex justify-between items-center">
-              <div className="flex items-center">
+              <div className="flex items-center space-x-8">
                 <button className="text-blue-600 hover:text-blue-800 mr-3 text-lg">
                   ←
                 </button>
                 <h1 className="text-2xl font-bold text-gray-900">
                   Create New Invoice
                 </h1>
-              </div>
 
-              <div className="flex items-center space-x-4">
-                <div className="flex space-x-8">
+                {/* Tabs Section */}
+                <div className="flex justify-center ml-64 space-x-8">
                   {tabs.map((tab) => (
                     <button
                       key={tab}
                       onClick={() => setActiveTab(tab)}
                       className={`relative pb-3 text-base transition-colors ${
                         activeTab === tab
-                          ? "text-blue-600 font-bold"
+                          ? "text-sky-500 font-bold"
                           : "text-gray-600 font-normal hover:text-gray-900"
                       }`}
                     >
                       {tab}
                       {activeTab === tab && (
-                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600"></div>
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-sky-500"></div>
                       )}
                     </button>
                   ))}
                 </div>
+              </div>
+
+              <div className="flex items-center">
                 <button
                   onClick={handleLogout}
                   className="flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
@@ -337,7 +340,7 @@ function Home() {
                         <Field
                           as="select"
                           name="vendor"
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg bg-white text-black border-black appearance-none ${
+                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg bg-white text-gray-400 border-black appearance-none ${
                             errors.vendor && touched.vendor
                               ? "border-red-500"
                               : "border-black"
@@ -374,7 +377,7 @@ function Home() {
                 {/* Invoice Details */}
                 <div className="mb-10">
                   <div className="flex items-center mb-6">
-                    <div className="bg-blue-100 rounded-lg p-3 mr-4">
+                    <div className="bg-blue-100 rounded-full p-4 mr-4">
                       <FaFileInvoice className="w-5 h-5 text-sky-500" />
                     </div>
                     <h3 className="text-xl font-bold text-gray-900 ml-3">
@@ -836,24 +839,27 @@ function Home() {
                   {/* Comments */}
                   <div className="mb-8">
                     <div className="flex items-center mb-4">
-                      <FaComment className="w-5 h-5 text-sky-500 mr-2" />
-                      <h3 className="text-lg font-semibold text-gray-900">
+                      <div className="bg-blue-100 rounded-full p-4 mr-4">
+                        <FaComment className="w-5 h-5 text-sky-500" />
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900">
                         Comments
                       </h3>
                     </div>
 
-                    <div>
+                    <div className="relative">
                       <Field
                         as="textarea"
                         name="comments"
-                        rows={4}
-                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        rows={1}
+                        className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-400 ${
                           errors.comments && touched.comments
                             ? "border-red-500"
-                            : "border-gray-300"
+                            : "border-black"
                         }`}
                         placeholder="Add any additional comments..."
                       />
+                      <FaArrowRight className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                       {errors.comments && touched.comments && (
                         <p className="text-red-500 text-sm mt-1">
                           {errors.comments}
