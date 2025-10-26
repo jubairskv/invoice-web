@@ -14,14 +14,6 @@ import {
 import { VscSend } from "react-icons/vsc";
 import { TbMessage } from "react-icons/tb";
 import { FiUpload, FiCheck } from "react-icons/fi";
-import { Document, Page, pdfjs } from "react-pdf";
-
-// Set up PDF.js worker - use a working CDN
-pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
-
-// Test PDF.js worker setup
-console.log("PDF.js version:", pdfjs.version);
-console.log("PDF.js worker source:", pdfjs.GlobalWorkerOptions.workerSrc);
 
 // Enhanced validation schema with comprehensive validation
 const validationSchema = Yup.object({
@@ -91,12 +83,8 @@ function Home() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Vendor Details");
   const [expenseToggle, setExpenseToggle] = useState(false);
-  const [, setUploadedFile] = useState(null);
-  const [pdfFile, setPdfFile] = useState(null);
-  const [numPages, setNumPages] = useState(null);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [pdfLoading, setPdfLoading] = useState(false);
-  const [pdfError, setPdfError] = useState(null);
+  const [uploadedFile, setUploadedFile] = useState(null);
+  const [isDragOver, setIsDragOver] = useState(false);
 
   const tabs = ["Vendor Details", "Invoice Details", "Comments"];
 
@@ -121,38 +109,51 @@ function Home() {
   // Handle PDF file upload
   const handleFileUpload = (event, setFieldValue) => {
     const file = event.target.files[0];
-    console.log("File selected:", file); // Debug log
-    
-    if (file && file.type === "application/pdf") {
-      console.log("PDF file detected, starting upload process"); // Debug log
-      
-      setUploadedFile(file);
-      setPdfLoading(true);
-      setPdfError(null);
-      
-      // Create file URL and set PDF file
-      const fileUrl = URL.createObjectURL(file);
-      console.log("File URL created:", fileUrl); // Debug log
-      setPdfFile(fileUrl);
+    console.log("File selected:", file);
 
-      // Auto-populate some form fields based on filename
-      const fileName = file.name.replace(".pdf", "");
-      if (setFieldValue) {
-        setFieldValue("invoiceNumber", fileName);
-      }
+    if (!file) {
+      console.log("No file selected");
+      return;
+    }
 
-      // Set a shorter timeout for faster feedback
-      const timeoutId = setTimeout(() => {
-        console.log("PDF loading timeout reached"); // Debug log
-        setPdfLoading(false);
-        setPdfError("PDF loading timeout. The file may be too large or corrupted. Try a smaller PDF file.");
-      }, 8000); // 8 second timeout
-
-      // Store timeout ID for cleanup
-      return () => clearTimeout(timeoutId);
-    } else {
-      console.log("Invalid file type:", file?.type); // Debug log
+    // Check file type
+    if (file.type !== "application/pdf") {
+      console.log("Invalid file type:", file.type);
       alert("Please select a valid PDF file");
+      // Reset the file input
+      event.target.value = "";
+      return;
+    }
+
+    // Check file size (limit to 10MB)
+    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+    if (file.size > maxSize) {
+      console.log("File too large:", file.size);
+      alert("File size must be less than 10MB");
+      // Reset the file input
+      event.target.value = "";
+      return;
+    }
+
+    console.log("PDF file uploaded successfully");
+
+    // Set the uploaded file
+    setUploadedFile(file);
+
+    // Auto-populate some form fields based on filename
+    const fileName = file.name.replace(".pdf", "");
+    if (setFieldValue) {
+      setFieldValue("invoiceNumber", fileName);
+    }
+  };
+
+  // Clear uploaded file and reset file input
+  const clearUploadedFile = () => {
+    setUploadedFile(null);
+    // Reset the file input to allow re-upload
+    const fileInput = document.getElementById("pdf-upload");
+    if (fileInput) {
+      fileInput.value = "";
     }
   };
 
@@ -160,72 +161,61 @@ function Home() {
   const handleDragOver = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    setIsDragOver(true);
   };
 
   const handleDragEnter = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    setIsDragOver(true);
   };
 
   const handleDragLeave = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    setIsDragOver(false);
   };
 
   const handleDrop = (e, setFieldValue) => {
     e.preventDefault();
     e.stopPropagation();
+    setIsDragOver(false);
 
     const files = e.dataTransfer.files;
-    console.log("Files dropped:", files); // Debug log
-    
-    if (files && files[0] && files[0].type === "application/pdf") {
-      const file = files[0];
-      console.log("PDF file dropped, starting upload process"); // Debug log
-      
-      setUploadedFile(file);
-      setPdfLoading(true);
-      setPdfError(null);
-      
-      // Create file URL and set PDF file
-      const fileUrl = URL.createObjectURL(file);
-      console.log("File URL created:", fileUrl); // Debug log
-      setPdfFile(fileUrl);
+    console.log("Files dropped:", files);
 
-      // Auto-populate some form fields based on filename
-      const fileName = file.name.replace(".pdf", "");
-      if (setFieldValue) {
-        setFieldValue("invoiceNumber", fileName);
-      }
-
-      // Set a shorter timeout for faster feedback
-      const timeoutId = setTimeout(() => {
-        console.log("PDF loading timeout reached"); // Debug log
-        setPdfLoading(false);
-        setPdfError("PDF loading timeout. The file may be too large or corrupted. Try a smaller PDF file.");
-      }, 8000); // 8 second timeout
-
-      // Store timeout ID for cleanup
-      return () => clearTimeout(timeoutId);
-    } else {
-      console.log("Invalid file type dropped:", files[0]?.type); // Debug log
-      alert("Please drop a valid PDF file");
+    if (!files || !files[0]) {
+      console.log("No files dropped");
+      return;
     }
-  };
 
-  // Handle PDF load success
-  const onDocumentLoadSuccess = ({ numPages }) => {
-    console.log("PDF loaded successfully, pages:", numPages); // Debug log
-    setNumPages(numPages);
-    setPdfLoading(false);
-    setPdfError(null);
-  };
+    const file = files[0];
 
-  // Handle PDF load error
-  const onDocumentLoadError = (error) => {
-    console.error("Error loading PDF:", error); // Debug log
-    setPdfLoading(false);
-    setPdfError(`Failed to load PDF: ${error.message || 'Unknown error'}`);
+    // Check file type
+    if (file.type !== "application/pdf") {
+      console.log("Invalid file type dropped:", file.type);
+      alert("Please drop a valid PDF file");
+      return;
+    }
+
+    // Check file size (limit to 10MB)
+    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+    if (file.size > maxSize) {
+      console.log("File too large:", file.size);
+      alert("File size must be less than 10MB");
+      return;
+    }
+
+    console.log("PDF file dropped successfully");
+
+    // Set the uploaded file
+    setUploadedFile(file);
+
+    // Auto-populate some form fields based on filename
+    const fileName = file.name.replace(".pdf", "");
+    if (setFieldValue) {
+      setFieldValue("invoiceNumber", fileName);
+    }
   };
 
   // Populate form with dummy data
@@ -396,214 +386,64 @@ function Home() {
             {/* Left Panel - Invoice Upload */}
             <div className="w-1/3 bg-gray-200 p-8">
               <div
-                className="bg-white border-2 border-dashed border-gray-400 rounded-xl p-12 text-center hover:border-blue-500 transition-colors cursor-pointer"
+                className={`bg-white border-2 border-dashed rounded-xl p-12 text-center transition-colors cursor-pointer ${
+                  isDragOver
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-400 hover:border-blue-500"
+                }`}
                 onDragOver={handleDragOver}
                 onDragEnter={handleDragEnter}
                 onDragLeave={handleDragLeave}
                 onDrop={(e) => handleDrop(e, setFieldValue)}
               >
                 <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                  Upload Your Invoice
+                  {isDragOver
+                    ? "Drop PDF Here"
+                    : uploadedFile
+                    ? "Upload Another Invoice"
+                    : "Upload Your Invoice"}
                 </h2>
                 <p className="text-black mb-8 text-lg">
-                  To auto-populate fields and save time
+                  {isDragOver
+                    ? "Release to upload"
+                    : uploadedFile
+                    ? "Drop another PDF or click upload"
+                    : "To auto-populate fields and save time"}
                 </p>
 
-                {pdfFile ? (
+                {uploadedFile ? (
                   <div className="mb-6">
-                    {pdfLoading && (
-                      <div className="flex flex-col justify-center items-center h-48">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-                        <div className="text-blue-600 font-medium">Loading PDF...</div>
-                        <div className="text-gray-500 text-sm mt-2">This may take a few moments</div>
-                        <button
-                          onClick={() => {
-                            setPdfFile(null);
-                            setUploadedFile(null);
-                            setPdfError(null);
-                            setPdfLoading(false);
-                            setPageNumber(1);
-                            setNumPages(null);
-                          }}
-                          className="mt-4 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 text-sm"
-                        >
-                          Cancel
-                        </button>
+                    {/* Success indicator */}
+                    <div className="flex items-center justify-center mb-4">
+                      <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                        <FiCheck className="w-5 h-5 text-white" />
                       </div>
-                    )}
-                    {pdfError && (
-                      <div className="flex flex-col justify-center items-center h-48">
-                        <div className="text-red-600 text-center">
-                          <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          </div>
-                          <p className="font-medium mb-2">PDF Loading Failed</p>
-                          <p className="text-sm text-gray-600 mb-4">{pdfError}</p>
-                          <div className="flex space-x-2">
-                            <button
-                              onClick={() => {
-                                setPdfFile(null);
-                                setUploadedFile(null);
-                                setPdfError(null);
-                                setPdfLoading(false);
-                                setPageNumber(1);
-                                setNumPages(null);
-                              }}
-                              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 text-sm"
-                            >
-                              Clear
-                            </button>
-                            <button
-                              onClick={() => {
-                                setPdfError(null);
-                                setPdfLoading(true);
-                                // Retry loading the same file
-                              }}
-                              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
-                            >
-                              Retry
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    {!pdfLoading && !pdfError && (
-                      <>
-                        {/* Success indicator */}
-                        <div className="flex items-center justify-center mb-4">
-                          <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                            <FiCheck className="w-5 h-5 text-white" />
-                          </div>
-                          <span className="ml-2 text-green-600 font-semibold">
-                            PDF Uploaded Successfully
-                          </span>
-                        </div>
+                      <span className="ml-2 text-green-600 font-semibold">
+                        PDF Uploaded Successfully
+                      </span>
+                    </div>
 
-                        {/* PDF Viewer with fallback */}
-                        <div className="border border-gray-300 rounded-lg overflow-hidden bg-white">
-                          <Document
-                            file={pdfFile}
-                            onLoadSuccess={onDocumentLoadSuccess}
-                            onLoadError={onDocumentLoadError}
-                            className="max-h-96 overflow-auto"
-                            loading={
-                              <div className="flex justify-center items-center h-48">
-                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                              </div>
-                            }
-                            error={
-                              <div className="flex flex-col justify-center items-center h-48 p-4">
-                                <div className="text-red-600 text-center">
-                                  <p className="font-medium mb-2">Unable to display PDF</p>
-                                  <p className="text-sm text-gray-600 mb-4">The PDF file may be corrupted or password protected</p>
-                                  <div className="flex space-x-2">
-                                    <button
-                                      onClick={() => {
-                                        const link = document.createElement("a");
-                                        link.href = pdfFile;
-                                        link.download = "invoice.pdf";
-                                        link.target = "_blank";
-                                        link.click();
-                                      }}
-                                      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
-                                    >
-                                      Download
-                                    </button>
-                                    <button
-                                      onClick={() => {
-                                        window.open(pdfFile, '_blank');
-                                      }}
-                                      className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
-                                    >
-                                      Open in New Tab
-                                    </button>
-                                  </div>
-                                </div>
-                              </div>
-                            }
-                          >
-                            <Page
-                              pageNumber={pageNumber}
-                              width={300}
-                              className="shadow-lg mx-auto"
-                            />
-                          </Document>
+                    {/* File info */}
+                    <div className="bg-gray-50 border border-gray-300 rounded-lg p-4 mb-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium text-gray-900">
+                            {uploadedFile.name}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
+                          </p>
                         </div>
-
-                        {/* Alternative PDF Viewer (iframe fallback) */}
-                        <div className="mt-4 p-2 bg-gray-50 rounded-lg">
-                          <p className="text-xs text-gray-600 mb-2">Alternative view:</p>
-                          <iframe
-                            src={pdfFile}
-                            width="100%"
-                            height="300"
-                            className="border border-gray-300 rounded"
-                            title="PDF Preview"
-                          />
-                        </div>
-
-                        {/* PDF Controls */}
-                        {numPages > 1 && (
-                          <div className="mt-4 flex justify-center items-center space-x-3">
-                            <button
-                              onClick={() =>
-                                setPageNumber(Math.max(1, pageNumber - 1))
-                              }
-                              disabled={pageNumber <= 1}
-                              className="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:bg-gray-400 hover:bg-blue-700 transition-colors"
-                            >
-                              ← Previous
-                            </button>
-                            <div className="px-4 py-2 bg-gray-100 rounded-lg">
-                              <span className="text-sm font-medium text-gray-700">
-                                Page {pageNumber} of {numPages}
-                              </span>
-                            </div>
-                            <button
-                              onClick={() =>
-                                setPageNumber(
-                                  Math.min(numPages, pageNumber + 1)
-                                )
-                              }
-                              disabled={pageNumber >= numPages}
-                              className="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:bg-gray-400 hover:bg-blue-700 transition-colors"
-                            >
-                              Next →
-                            </button>
-                          </div>
-                        )}
-
-                        {/* PDF Actions */}
-                        <div className="mt-4 flex justify-center space-x-2">
+                        <div className="flex space-x-2">
                           <button
-                            onClick={() => {
-                              setPdfFile(null);
-                              setUploadedFile(null);
-                              setPdfError(null);
-                              setPdfLoading(false);
-                              setPageNumber(1);
-                              setNumPages(null);
-                            }}
-                            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
+                            onClick={clearUploadedFile}
+                            className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
                           >
-                            Remove PDF
-                          </button>
-                          <button
-                            onClick={() => {
-                              const link = document.createElement("a");
-                              link.href = pdfFile;
-                              link.download = "invoice.pdf";
-                              link.click();
-                            }}
-                            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
-                          >
-                            Download PDF
+                            Remove
                           </button>
                         </div>
-                      </>
-                    )}
+                      </div>
+                    </div>
                   </div>
                 ) : (
                   <div className="w-50 h-50 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
@@ -624,10 +464,17 @@ function Home() {
                   />
                   <label
                     htmlFor="pdf-upload"
-                    className="bg-white border-2 border-gray-400 text-black px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors mb-4 flex items-center justify-center cursor-pointer w-28 shadow-lg whitespace-nowrap"
+                    className="bg-white border-2 border-gray-400 text-black px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors mb-4 flex items-center justify-center cursor-pointer w-32 shadow-lg whitespace-nowrap"
+                    onClick={() => {
+                      // Ensure the file input is triggered
+                      const fileInput = document.getElementById("pdf-upload");
+                      if (fileInput) {
+                        fileInput.click();
+                      }
+                    }}
                   >
-                    <FiUpload className="w-5 h-5 mr-1 text-gray-600" />
-                    Upload File
+                    <FiUpload className="w-5 h-5 ml-0 text-black" />
+                    {uploadedFile ? "Upload Another" : "Upload File"}
                   </label>
 
                   <div className="flex items-center gap-2 text-gray-500 mb-4">
