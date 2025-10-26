@@ -249,6 +249,12 @@ function Home() {
     });
   };
 
+  // Clear saved data from localStorage
+  const clearSavedData = () => {
+    localStorage.removeItem("invoiceFormData");
+    alert("Saved data has been cleared from localStorage.");
+  };
+
   return (
     <Formik
       initialValues={{
@@ -270,7 +276,7 @@ function Home() {
         ...loadSavedData(),
       }}
       validationSchema={validationSchema}
-      onSubmit={(values, { setSubmitting, setStatus }) => {
+      onSubmit={(values, { setSubmitting, setStatus, setFieldValue }) => {
         try {
           // Validate that line amount doesn't exceed total amount
           if (values.lineAmount > values.totalAmount) {
@@ -302,12 +308,19 @@ function Home() {
           saveData(values);
 
           // Clear any previous errors
-          setStatus({ success: "Invoice submitted successfully!" });
+          setStatus({ success: "Invoice submitted successfully! Data has been saved to localStorage." });
           setSubmitting(false);
 
-          // Show success message
+          // Show success message and auto-populate form
           setTimeout(() => {
-            alert("Invoice submitted successfully! Data has been saved.");
+            alert("Invoice submitted successfully! Data has been saved to localStorage and form will be auto-populated.");
+            // Auto-populate form with saved data
+            const savedData = loadSavedData();
+            Object.keys(savedData).forEach((key) => {
+              setFieldValue(key, savedData[key]);
+            });
+            // Clear uploaded file to start fresh
+            clearUploadedFile();
           }, 100);
         } catch (error) {
           console.error("Submission error:", error);
@@ -1124,6 +1137,15 @@ function Home() {
                       className="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
                     >
                       Save as Draft
+                    </button>
+
+                    {/* Clear Saved Data Button */}
+                    <button
+                      type="button"
+                      onClick={clearSavedData}
+                      className="px-6 py-3 bg-red-100 border border-red-300 text-red-700 rounded-lg hover:bg-red-200 transition-colors font-medium"
+                    >
+                      Clear Saved Data
                     </button>
 
                     {/* Submit Invoice Button - Submit & New Style */}
