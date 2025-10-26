@@ -330,7 +330,7 @@ function Home() {
                 </h1>
 
                 {/* Tabs Section */}
-                <div className="flex justify-center ml-64 space-x-8">
+                <div className="flex justify-center ml-[500px] space-x-8">
                   {tabs.map((tab) => (
                     <button
                       key={tab}
