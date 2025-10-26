@@ -140,7 +140,7 @@ function Home() {
 
     // Set the uploaded file
     setUploadedFile(file);
-    
+
     // Create file URL for viewing
     const url = URL.createObjectURL(file);
     setFileUrl(url);
@@ -222,7 +222,7 @@ function Home() {
 
     // Set the uploaded file
     setUploadedFile(file);
-    
+
     // Create file URL for viewing
     const url = URL.createObjectURL(file);
     setFileUrl(url);
@@ -454,7 +454,7 @@ function Home() {
                           <button
                             onClick={() => {
                               if (fileUrl) {
-                                window.open(fileUrl, '_blank');
+                                window.open(fileUrl, "_blank");
                               }
                             }}
                             className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
@@ -470,8 +470,6 @@ function Home() {
                         </div>
                       </div>
                     </div>
-
-                    
                   </div>
                 ) : (
                   <div className="w-50 h-50 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
