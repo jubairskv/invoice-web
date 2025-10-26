@@ -1124,29 +1124,30 @@ function Home() {
                             ${values.lineAmount || "0.00"} / $
                             {values.totalAmount || "0.00"}
                           </span>
-                          <div className="flex items-center space-x-2">
-                            <button
-                              type="button"
-                              onClick={() => setExpenseToggle(false)}
-                              className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                                !expenseToggle
-                                  ? "bg-blue-600 text-white"
-                                  : "bg-gray-200 text-gray-600 hover:bg-gray-300"
-                              }`}
+                          <div className="relative inline-block w-16 h-8 align-middle select-none">
+                            <input
+                              type="checkbox"
+                              checked={expenseToggle}
+                              onChange={() => setExpenseToggle(!expenseToggle)}
+                              className="hidden"
+                              id="toggle"
+                            />
+                            <label
+                              htmlFor="toggle"
+                              className="block overflow-hidden h-8 rounded-full bg-gray-300 cursor-pointer"
                             >
-                              $
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setExpenseToggle(true)}
-                              className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                                expenseToggle
-                                  ? "bg-blue-600 text-white"
-                                  : "bg-gray-200 text-gray-600 hover:bg-gray-300"
-                              }`}
-                            >
-                              %
-                            </button>
+                              <span
+                                className={`block h-8 w-8 rounded-full transform transition-transform duration-200 ease-in ${
+                                  expenseToggle 
+                                    ? 'translate-x-8 bg-blue-600' 
+                                    : 'translate-x-0 bg-white'
+                                }`}
+                              >
+                                <span className="flex items-center justify-center h-full text-xs font-bold">
+                                  {expenseToggle ? '%' : '$'}
+                                </span>
+                              </span>
+                            </label>
                           </div>
                         </div>
                       </div>
