@@ -533,13 +533,6 @@ function Home() {
                     <p className="text-sm">Click to upload or drag and drop</p>
                   </div>
                 </div>
-
-                <button
-                  onClick={() => populateDummyData(setFieldValue)}
-                  className="mt-6 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors"
-                >
-                  Populate with Dummy Data
-                </button>
               </div>
             </div>
 
@@ -1114,7 +1107,7 @@ function Home() {
                       <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
                       <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
                     </div>
-                    
+
                     {/* Populate Dummy Data Button - Save as Draft Style */}
                     <button
                       type="button"
@@ -1123,7 +1116,7 @@ function Home() {
                     >
                       Save as Draft
                     </button>
-                    
+
                     {/* Submit Invoice Button - Submit & New Style */}
                     <button
                       type="submit"
