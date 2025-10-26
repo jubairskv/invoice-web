@@ -537,7 +537,7 @@ function Home() {
             </div>
 
             {/* Right Panel - Form Details */}
-            <div className="flex-1 bg-gray-200 p-8 overflow-y-auto">
+            <div className="flex-1 bg-gray-200 p-8">
               <Form>
                 {/* Vendor Details */}
                 <div className="mb-10">
