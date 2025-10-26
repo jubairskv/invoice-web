@@ -84,6 +84,7 @@ function Home() {
   const [activeTab, setActiveTab] = useState("Vendor Details");
   const [expenseToggle, setExpenseToggle] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
+  const [fileUrl, setFileUrl] = useState(null);
   const [isDragOver, setIsDragOver] = useState(false);
 
   const tabs = ["Vendor Details", "Invoice Details", "Comments"];
@@ -139,6 +140,10 @@ function Home() {
 
     // Set the uploaded file
     setUploadedFile(file);
+    
+    // Create file URL for viewing
+    const url = URL.createObjectURL(file);
+    setFileUrl(url);
 
     // Auto-populate some form fields based on filename
     const fileName = file.name.replace(".pdf", "");
@@ -150,6 +155,11 @@ function Home() {
   // Clear uploaded file and reset file input
   const clearUploadedFile = () => {
     setUploadedFile(null);
+    // Clean up the file URL to free memory
+    if (fileUrl) {
+      URL.revokeObjectURL(fileUrl);
+    }
+    setFileUrl(null);
     // Reset the file input to allow re-upload
     const fileInput = document.getElementById("pdf-upload");
     if (fileInput) {
@@ -212,6 +222,10 @@ function Home() {
 
     // Set the uploaded file
     setUploadedFile(file);
+    
+    // Create file URL for viewing
+    const url = URL.createObjectURL(file);
+    setFileUrl(url);
 
     // Auto-populate some form fields based on filename
     const fileName = file.name.replace(".pdf", "");
@@ -438,6 +452,16 @@ function Home() {
                         </div>
                         <div className="flex space-x-2">
                           <button
+                            onClick={() => {
+                              if (fileUrl) {
+                                window.open(fileUrl, '_blank');
+                              }
+                            }}
+                            className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                          >
+                            View PDF
+                          </button>
+                          <button
                             onClick={clearUploadedFile}
                             className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
                           >
@@ -446,6 +470,35 @@ function Home() {
                         </div>
                       </div>
                     </div>
+
+                    {/* PDF Viewer */}
+                    {fileUrl && (
+                      <>
+                        <div className="border border-gray-300 rounded-lg overflow-hidden bg-white mb-4">
+                          <iframe
+                            src={fileUrl}
+                            width="100%"
+                            height="400"
+                            className="border-0"
+                            title="PDF Preview"
+                          />
+                        </div>
+                        
+                        {/* Additional View PDF Button */}
+                        <div className="flex justify-center">
+                          <button
+                            onClick={() => {
+                              if (fileUrl) {
+                                window.open(fileUrl, '_blank');
+                              }
+                            }}
+                            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                          >
+                            Open PDF in New Tab
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </div>
                 ) : (
                   <div className="w-50 h-50 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
