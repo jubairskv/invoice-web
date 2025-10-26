@@ -354,7 +354,7 @@ function Home() {
             </div>
           )}
 
-          <div className="flex h-screen">
+          <div className="flex min-h-screen">
             {/* Left Panel - Invoice Upload */}
             <div className="w-1/3 bg-gray-200 p-8">
               <div
