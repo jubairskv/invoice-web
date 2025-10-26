@@ -12,6 +12,7 @@ import {
   FaSignOutAlt,
 } from "react-icons/fa";
 import { VscSend } from "react-icons/vsc";
+import { TbMessage } from "react-icons/tb";
 import { FiUpload, FiCheck } from "react-icons/fi";
 import { Document, Page, pdfjs } from "react-pdf";
 
@@ -21,48 +22,67 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url
 ).toString();
 
-// Validation schema
+// Enhanced validation schema with comprehensive validation
 const validationSchema = Yup.object({
-  vendor: Yup.string().required("Vendor is required"),
-  purchaseOrderNumber: Yup.string().required(
-    "Purchase Order Number is required"
-  ),
-  invoiceNumber: Yup.string().required("Invoice Number is required"),
+  vendor: Yup.string()
+    .required("Vendor is required")
+    .min(2, "Vendor name must be at least 2 characters"),
+  purchaseOrderNumber: Yup.string()
+    .required("Purchase Order Number is required")
+    .matches(/^PO-\d{4}-\d{3}$/, "PO Number must be in format PO-YYYY-XXX"),
+  invoiceNumber: Yup.string()
+    .required("Invoice Number is required")
+    .matches(/^INV-\d{3}$/, "Invoice Number must be in format INV-XXX"),
   totalAmount: Yup.number()
     .required("Total Amount is required")
-    .min(0, "Amount must be positive"),
-  invoiceDueDate: Yup.string().required("Invoice Due Date is required"),
-  invoiceDescription: Yup.string().required("Invoice Description is required"),
-  invoiceDate: Yup.string().required("Invoice Date is required"),
+    .min(0.01, "Amount must be greater than 0")
+    .max(999999.99, "Amount cannot exceed $999,999.99"),
+  invoiceDueDate: Yup.string()
+    .required("Invoice Due Date is required")
+    .matches(/^\d{2}\/\d{2}\/\d{4}$/, "Date must be in MM/DD/YYYY format"),
+  invoiceDescription: Yup.string()
+    .required("Invoice Description is required")
+    .min(10, "Description must be at least 10 characters")
+    .max(500, "Description cannot exceed 500 characters"),
+  invoiceDate: Yup.string()
+    .required("Invoice Date is required")
+    .matches(/^\d{2}\/\d{2}\/\d{4}$/, "Date must be in MM/DD/YYYY format"),
   paymentTerms: Yup.string().required("Payment Terms is required"),
-  glPostDate: Yup.string().required("GL Post Date is required"),
+  glPostDate: Yup.string()
+    .required("GL Post Date is required")
+    .matches(/^\d{2}\/\d{2}\/\d{4}$/, "Date must be in MM/DD/YYYY format"),
   lineAmount: Yup.number()
     .required("Line Amount is required")
-    .min(0, "Amount must be positive"),
+    .min(0.01, "Amount must be greater than 0")
+    .max(999999.99, "Amount cannot exceed $999,999.99"),
   account: Yup.string().required("Account is required"),
-  description: Yup.string().required("Description is required"),
+  description: Yup.string()
+    .required("Description is required")
+    .min(5, "Description must be at least 5 characters")
+    .max(200, "Description cannot exceed 200 characters"),
   department: Yup.string().required("Department is required"),
   location: Yup.string().required("Location is required"),
-  comments: Yup.string(),
+  comments: Yup.string()
+    .max(1000, "Comments cannot exceed 1000 characters"),
 });
 
 // Dummy data for form population
 const dummyData = {
   vendor: "A-1 Exterminators",
   purchaseOrderNumber: "PO-2024-001",
-  invoiceNumber: "INV-2024-001",
+  invoiceNumber: "INV-001",
   totalAmount: 1250.0,
   invoiceDueDate: "12/31/2024",
-  invoiceDescription: "Monthly pest control services for office building",
+  invoiceDescription: "Monthly pest control services for office building - comprehensive treatment",
   invoiceDate: "12/01/2024",
   paymentTerms: "Net 30",
   glPostDate: "12/15/2024",
   lineAmount: 1250.0,
   account: "Office Supplies",
-  description: "Professional pest control services",
+  description: "Professional pest control services for office building",
   department: "Facilities",
   location: "Main Office",
-  comments: "Regular monthly service - all areas treated",
+  comments: "Regular monthly service - all areas treated including kitchen, break room, and storage areas",
 };
 
 function Home() {
@@ -152,13 +172,51 @@ function Home() {
         ...loadSavedData(),
       }}
       validationSchema={validationSchema}
-      onSubmit={(values, { setSubmitting }) => {
-        saveData(values);
-        setSubmitting(false);
-        alert("Form submitted successfully!");
+      onSubmit={(values, { setSubmitting, setStatus }) => {
+        try {
+          // Validate that line amount doesn't exceed total amount
+          if (values.lineAmount > values.totalAmount) {
+            setStatus({ error: "Line Amount cannot exceed Total Amount" });
+            setSubmitting(false);
+            return;
+          }
+
+          // Validate date formats and logic
+          const invoiceDate = new Date(values.invoiceDate);
+          const dueDate = new Date(values.invoiceDueDate);
+          const glPostDate = new Date(values.glPostDate);
+
+          if (dueDate < invoiceDate) {
+            setStatus({ error: "Invoice Due Date cannot be before Invoice Date" });
+            setSubmitting(false);
+            return;
+          }
+
+          if (glPostDate < invoiceDate) {
+            setStatus({ error: "GL Post Date cannot be before Invoice Date" });
+            setSubmitting(false);
+            return;
+          }
+
+          // Save data to localStorage
+          saveData(values);
+          
+          // Clear any previous errors
+          setStatus({ success: "Invoice submitted successfully!" });
+          setSubmitting(false);
+          
+          // Show success message
+          setTimeout(() => {
+            alert("Invoice submitted successfully! Data has been saved.");
+          }, 100);
+        } catch (error) {
+          console.error("Submission error:", error);
+          setStatus({ error: "An error occurred while submitting. Please try again." });
+          setSubmitting(false);
+        }
       }}
     >
-      {({ errors, touched, setFieldValue, values }) => (
+      {({ errors, touched, setFieldValue, values, status, isSubmitting }) => (
         <div className="min-h-screen bg-white">
           {/* Header */}
           <div className="bg-white border-b border-gray-200 px-8 py-6">
@@ -203,6 +261,32 @@ function Home() {
               </div>
             </div>
           </div>
+
+          {/* Status Messages */}
+          {status && (
+            <div className="px-8 py-4">
+              {status.error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">
+                  <div className="flex items-center">
+                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                    </svg>
+                    {status.error}
+                  </div>
+                </div>
+              )}
+              {status.success && (
+                <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4">
+                  <div className="flex items-center">
+                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    {status.success}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="flex h-screen">
             {/* Left Panel - Invoice Upload */}
@@ -323,7 +407,7 @@ function Home() {
                 {/* Vendor Details */}
                 <div className="mb-10">
                   <div className="flex items-center mb-6">
-                    <div className="bg-blue-100 rounded-full p-4">
+                    <div className="bg-blue-200 rounded-full p-4">
                       <FaBuilding className="w-5 h-5 text-sky-500" />
                     </div>
                     <h3 className="text-xl font-bold text-gray-900 ml-3">
@@ -377,7 +461,7 @@ function Home() {
                 {/* Invoice Details */}
                 <div className="mb-10">
                   <div className="flex items-center mb-6">
-                    <div className="bg-blue-100 rounded-full p-4 mr-4">
+                    <div className="bg-blue-200 rounded-full p-4 mr-4">
                       <FaFileInvoice className="w-5 h-5 text-sky-500" />
                     </div>
                     <h3 className="text-xl font-bold text-gray-900 ml-3">
@@ -456,7 +540,7 @@ function Home() {
                             </Field>
                             <FaChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
                           </div>
-                          {errors.invoicelineNumber &&
+                          {errors.invoiceNumber &&
                             touched.invoiceNumber && (
                               <p className="text-red-500 text-sm mt-1">
                                 {errors.invoiceNumber}
@@ -470,7 +554,7 @@ function Home() {
                           </label>
                           <div className="relative">
                             <div className="flex items-center border border-black rounded-lg bg-white overflow-hidden">
-                              <span className="pl-4 text-black bg-gray-200 px-3 py-3">
+                              <span className="pl-4 text-gray-400 font-bold bg-gray-200 px-3 py-3">
                                 $
                               </span>
                               <Field
@@ -610,18 +694,23 @@ function Home() {
                         Invoice Description{" "}
                         <span className="text-red-500">*</span>
                       </label>
-                      <Field
-                        as="textarea"
-                        name="invoiceDescription"
-                        rows={1}
-                        className={`w-full px-4 py-3 border border-black rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 ${
-                          errors.invoiceDescription &&
-                          touched.invoiceDescription
-                            ? "border-red-500"
-                            : "border-black"
-                        }`}
-                        placeholder="Enter invoice description..."
-                      />
+                      <div className="relative">
+                        <Field
+                          as="textarea"
+                          name="invoiceDescription"
+                          rows={1}
+                          className={`w-full px-4 py-3 border border-black rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 resize-none ${
+                            errors.invoiceDescription &&
+                            touched.invoiceDescription
+                              ? "border-red-500"
+                              : "border-black"
+                          }`}
+                          placeholder="Enter invoice description..."
+                        />
+                        {/* <div className="absolute bottom-2 right-2 text-xs text-gray-400">
+                          {values.invoiceDescription?.length || 0}/500
+                        </div> */}
+                      </div>
                       {errors.invoiceDescription &&
                         touched.invoiceDescription && (
                           <p className="text-red-500 text-sm mt-1">
@@ -680,7 +769,7 @@ function Home() {
                           </label>
                           <div className="relative">
                             <div className="flex items-center border border-black rounded-lg bg-white overflow-hidden">
-                              <span className="pl-4 text-black bg-gray-200 px-3 py-3">
+                              <span className="pl-4 text-gray-400 font-bold bg-gray-200 px-3 py-3">
                                 $
                               </span>
                               <Field
@@ -807,17 +896,22 @@ function Home() {
                       <label className="block text-sm font-semibold text-gray-700 mb-2">
                         Description <span className="text-red-500">*</span>
                       </label>
-                      <Field
-                        as="textarea"
-                        name="description"
-                        rows={1}
-                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-400 ${
-                          errors.description && touched.description
-                            ? "border-red-500"
-                            : "border-black"
-                        }`}
-                        placeholder="Enter description..."
-                      />
+                      <div className="relative">
+                        <Field
+                          as="textarea"
+                          name="description"
+                          rows={1}
+                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 resize-none ${
+                            errors.description && touched.description
+                              ? "border-red-500"
+                              : "border-black"
+                          }`}
+                          placeholder="Enter description..."
+                        />
+                        {/* <div className="absolute bottom-2 right-2 text-xs text-gray-400">
+                          {values.description?.length || 0}/200
+                        </div> */}
+                      </div>
                       {errors.description && touched.description && (
                         <p className="text-red-500 text-sm mt-1">
                           {errors.description}
@@ -839,8 +933,8 @@ function Home() {
                   {/* Comments */}
                   <div className="mb-8">
                     <div className="flex items-center mb-4">
-                      <div className="bg-blue-100 rounded-full p-4 mr-4">
-                        <FaComment className="w-5 h-5 text-sky-500" />
+                      <div className="bg-blue-200 rounded-full p-4 mr-4">
+                        <TbMessage className="w-5 h-5 text-sky-500" />
                       </div>
                       <h3 className="text-xl font-bold text-gray-900">
                         Comments
@@ -852,14 +946,17 @@ function Home() {
                         as="textarea"
                         name="comments"
                         rows={1}
-                        className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-400 ${
+                        className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 resize-none ${
                           errors.comments && touched.comments
                             ? "border-red-500"
                             : "border-black"
                         }`}
                         placeholder="Add any additional comments..."
                       />
-                      <VscSend className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                      <VscSend className="absolute right-3 top-4 text-gray-400" />
+                      {/* <div className="absolute bottom-2 right-10 text-xs text-gray-400">
+                        {values.comments?.length || 0}/1000
+                      </div> */}
                       {errors.comments && touched.comments && (
                         <p className="text-red-500 text-sm mt-1">
                           {errors.comments}
@@ -879,9 +976,14 @@ function Home() {
                     </button>
                     <button
                       type="submit"
-                      className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                      disabled={isSubmitting}
+                      className={`px-8 py-3 rounded-lg transition-colors font-semibold ${
+                        isSubmitting
+                          ? "bg-gray-400 text-gray-200 cursor-not-allowed"
+                          : "bg-blue-600 text-white hover:bg-blue-700"
+                      }`}
                     >
-                      Submit Invoice
+                      {isSubmitting ? "Submitting..." : "Submit Invoice"}
                     </button>
                   </div>
                 </div>
