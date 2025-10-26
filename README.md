@@ -4,45 +4,45 @@ A fully functional React application for creating and managing invoices with com
 
 ## Features
 
-### ✅ Login System
+###  Login System
 - **Formik-powered login form** with comprehensive validation
 - **Session management** using localStorage
 - **Auto-login** functionality for returning users
 - **Logout** functionality with session cleanup
 - **Password strength validation** with security requirements
 
-### ✅ Design Replication
+###  Design Replication
 - **Accurate design implementation** matching provided specifications
 - **Responsive layout** that works across different screen sizes
 - **Modern UI components** with Tailwind CSS styling
 - **Professional invoice form** with tabbed navigation
 
-### ✅ Functional Form Implementation
+###  Functional Form Implementation
 - **Formik integration** for form state management
 - **Comprehensive validation** using Yup schema validation
 - **Real-time validation** with dynamic error display
 - **Character count indicators** for text areas
 - **Business logic validation** (e.g., date relationships, amount constraints)
 
-### ✅ Data Persistence
+###  Data Persistence
 - **localStorage integration** for form data persistence
 - **Auto-save functionality** on form submission
 - **Data restoration** on page reload
 - **Session persistence** across browser sessions
 
-### ✅ PDF Upload and Display
+###  PDF Upload and Display
 - **PDF file upload** with drag-and-drop support
 - **PDF preview** using react-pdf library
 - **Multi-page PDF support** with navigation controls
 - **Error handling** for invalid file types
 - **Loading states** for better user experience
 
-### ✅ Dummy Data Population
+###  Dummy Data Population
 - **One-click population** of all form fields
 - **Realistic sample data** for testing purposes
 - **Consistent data relationships** (e.g., matching amounts, dates)
 
-### ✅ Bonus Features
+###  Bonus Features
 - **Comprehensive form validation** with detailed error messages
 - **Dynamic styling** indicating validation status
 - **User-friendly error handling** with visual feedback
