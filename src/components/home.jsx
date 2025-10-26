@@ -16,17 +16,12 @@ import { TbMessage } from "react-icons/tb";
 import { FiUpload, FiCheck } from "react-icons/fi";
 import { Document, Page, pdfjs } from "react-pdf";
 
-// Set up PDF.js worker with fallback options
-try {
-  // Try CDN first
-  pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
-} catch {
-  // Fallback to local worker
-  pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-    "pdfjs-dist/build/pdf.worker.min.js",
-    import.meta.url
-  ).toString();
-}
+// Set up PDF.js worker - use a working CDN
+pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+
+// Test PDF.js worker setup
+console.log("PDF.js version:", pdfjs.version);
+console.log("PDF.js worker source:", pdfjs.GlobalWorkerOptions.workerSrc);
 
 // Enhanced validation schema with comprehensive validation
 const validationSchema = Yup.object({
@@ -126,13 +121,18 @@ function Home() {
   // Handle PDF file upload
   const handleFileUpload = (event, setFieldValue) => {
     const file = event.target.files[0];
+    console.log("File selected:", file); // Debug log
+    
     if (file && file.type === "application/pdf") {
+      console.log("PDF file detected, starting upload process"); // Debug log
+      
       setUploadedFile(file);
       setPdfLoading(true);
       setPdfError(null);
       
       // Create file URL and set PDF file
       const fileUrl = URL.createObjectURL(file);
+      console.log("File URL created:", fileUrl); // Debug log
       setPdfFile(fileUrl);
 
       // Auto-populate some form fields based on filename
@@ -141,14 +141,17 @@ function Home() {
         setFieldValue("invoiceNumber", fileName);
       }
 
-      // Set a timeout to handle loading issues
-      setTimeout(() => {
-        if (pdfLoading) {
-          setPdfLoading(false);
-          setPdfError("PDF loading timeout. Please try a different file or check if the file is corrupted.");
-        }
-      }, 10000); // 10 second timeout
+      // Set a shorter timeout for faster feedback
+      const timeoutId = setTimeout(() => {
+        console.log("PDF loading timeout reached"); // Debug log
+        setPdfLoading(false);
+        setPdfError("PDF loading timeout. The file may be too large or corrupted. Try a smaller PDF file.");
+      }, 8000); // 8 second timeout
+
+      // Store timeout ID for cleanup
+      return () => clearTimeout(timeoutId);
     } else {
+      console.log("Invalid file type:", file?.type); // Debug log
       alert("Please select a valid PDF file");
     }
   };
@@ -174,14 +177,19 @@ function Home() {
     e.stopPropagation();
 
     const files = e.dataTransfer.files;
+    console.log("Files dropped:", files); // Debug log
+    
     if (files && files[0] && files[0].type === "application/pdf") {
       const file = files[0];
+      console.log("PDF file dropped, starting upload process"); // Debug log
+      
       setUploadedFile(file);
       setPdfLoading(true);
       setPdfError(null);
       
       // Create file URL and set PDF file
       const fileUrl = URL.createObjectURL(file);
+      console.log("File URL created:", fileUrl); // Debug log
       setPdfFile(fileUrl);
 
       // Auto-populate some form fields based on filename
@@ -190,20 +198,24 @@ function Home() {
         setFieldValue("invoiceNumber", fileName);
       }
 
-      // Set a timeout to handle loading issues
-      setTimeout(() => {
-        if (pdfLoading) {
-          setPdfLoading(false);
-          setPdfError("PDF loading timeout. Please try a different file or check if the file is corrupted.");
-        }
-      }, 10000); // 10 second timeout
+      // Set a shorter timeout for faster feedback
+      const timeoutId = setTimeout(() => {
+        console.log("PDF loading timeout reached"); // Debug log
+        setPdfLoading(false);
+        setPdfError("PDF loading timeout. The file may be too large or corrupted. Try a smaller PDF file.");
+      }, 8000); // 8 second timeout
+
+      // Store timeout ID for cleanup
+      return () => clearTimeout(timeoutId);
     } else {
+      console.log("Invalid file type dropped:", files[0]?.type); // Debug log
       alert("Please drop a valid PDF file");
     }
   };
 
   // Handle PDF load success
   const onDocumentLoadSuccess = ({ numPages }) => {
+    console.log("PDF loaded successfully, pages:", numPages); // Debug log
     setNumPages(numPages);
     setPdfLoading(false);
     setPdfError(null);
@@ -211,9 +223,9 @@ function Home() {
 
   // Handle PDF load error
   const onDocumentLoadError = (error) => {
-    console.error("Error loading PDF:", error);
+    console.error("Error loading PDF:", error); // Debug log
     setPdfLoading(false);
-    setPdfError("Failed to load PDF. Please try a different file.");
+    setPdfError(`Failed to load PDF: ${error.message || 'Unknown error'}`);
   };
 
   // Populate form with dummy data
@@ -469,7 +481,7 @@ function Home() {
                           </span>
                         </div>
 
-                        {/* PDF Viewer */}
+                        {/* PDF Viewer with fallback */}
                         <div className="border border-gray-300 rounded-lg overflow-hidden bg-white">
                           <Document
                             file={pdfFile}
@@ -486,18 +498,28 @@ function Home() {
                                 <div className="text-red-600 text-center">
                                   <p className="font-medium mb-2">Unable to display PDF</p>
                                   <p className="text-sm text-gray-600 mb-4">The PDF file may be corrupted or password protected</p>
-                                  <button
-                                    onClick={() => {
-                                      const link = document.createElement("a");
-                                      link.href = pdfFile;
-                                      link.download = "invoice.pdf";
-                                      link.target = "_blank";
-                                      link.click();
-                                    }}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
-                                  >
-                                    Download Instead
-                                  </button>
+                                  <div className="flex space-x-2">
+                                    <button
+                                      onClick={() => {
+                                        const link = document.createElement("a");
+                                        link.href = pdfFile;
+                                        link.download = "invoice.pdf";
+                                        link.target = "_blank";
+                                        link.click();
+                                      }}
+                                      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                                    >
+                                      Download
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        window.open(pdfFile, '_blank');
+                                      }}
+                                      className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
+                                    >
+                                      Open in New Tab
+                                    </button>
+                                  </div>
                                 </div>
                               </div>
                             }
@@ -508,6 +530,18 @@ function Home() {
                               className="shadow-lg mx-auto"
                             />
                           </Document>
+                        </div>
+
+                        {/* Alternative PDF Viewer (iframe fallback) */}
+                        <div className="mt-4 p-2 bg-gray-50 rounded-lg">
+                          <p className="text-xs text-gray-600 mb-2">Alternative view:</p>
+                          <iframe
+                            src={pdfFile}
+                            width="100%"
+                            height="300"
+                            className="border border-gray-300 rounded"
+                            title="PDF Preview"
+                          />
                         </div>
 
                         {/* PDF Controls */}
