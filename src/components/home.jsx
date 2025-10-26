@@ -503,9 +503,9 @@ function Home() {
                   />
                   <label
                     htmlFor="pdf-upload"
-                    className="bg-white border-2  border-gray-400 text-black px-7 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors mb-4 flex items-center justify-center cursor-pointer w-36 shadow-lg"
+                    className="bg-white border-2 border-gray-400 text-black px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors mb-4 flex items-center justify-center cursor-pointer w-28 shadow-lg whitespace-nowrap"
                   >
-                    <FiUpload className="w-8 h-8 mr-2" />
+                    <FiUpload className="w-5 h-5 mr-1 text-gray-600" />
                     Upload File
                   </label>
 
