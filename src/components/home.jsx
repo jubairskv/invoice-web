@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
@@ -86,7 +86,7 @@ const dummyData = {
   department: "Facilities",
   location: "Main Office",
   comments:
-    "Regular monthly service - all areas treated including kitchen, break room, and storage areas",
+    "Regular monthly service - all areas treated including kitchen and storage areas",
 };
 
 function Home() {
@@ -98,14 +98,42 @@ function Home() {
   const [isDragOver, setIsDragOver] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [showClearDataPopup, setShowClearDataPopup] = useState(false);
-  const autoSaveTimeoutRef = React.useRef(null);
+  const autoSaveTimeoutRef = useRef(null);
 
   const tabs = ["Vendor Details", "Invoice Details", "Comments"];
 
-  // Auto-save effect for form data
-  React.useEffect(() => {
-    // This will be called when the component mounts
-    // The actual auto-save will be handled in the Formik component
+  // Load saved file info on component mount
+  useEffect(() => {
+    const savedFileInfo = loadSavedFileInfo();
+    if (savedFileInfo) {
+      // Create a mock file object from saved info
+      const mockFile = {
+        name: savedFileInfo.name,
+        size: savedFileInfo.size,
+        type: savedFileInfo.type,
+        lastModified: savedFileInfo.lastModified,
+        isRestored: true, // Flag to indicate this is a restored file
+      };
+
+      // Set the uploaded file state
+      setUploadedFile(mockFile);
+
+      // If it's the assets PDF, use the imported file URL
+      if (savedFileInfo.name === "Jubair K.pdf") {
+        setFileUrl(invoice);
+        console.log("Assets PDF restored successfully");
+      } else if (savedFileInfo.data) {
+        // For uploaded files with base64 data, recreate the file URL
+        setFileUrl(savedFileInfo.data);
+        console.log("Uploaded file restored successfully:", savedFileInfo.name);
+      } else {
+        // Fallback for files without data
+        console.log("File info restored but no data available:", savedFileInfo.name);
+        setFileUrl(null);
+      }
+
+      console.log("File state restored from localStorage");
+    }
   }, []);
 
   // Load saved data from localStorage on component mount
@@ -123,6 +151,23 @@ function Home() {
       localStorage.removeItem("invoiceFormData");
     }
     return {};
+  };
+
+  // Load saved file info from localStorage
+  const loadSavedFileInfo = () => {
+    try {
+      const savedFileInfo = localStorage.getItem("invoiceFileInfo");
+      if (savedFileInfo) {
+        const parsedFileInfo = JSON.parse(savedFileInfo);
+        console.log("Loaded file info from localStorage:", parsedFileInfo);
+        return parsedFileInfo;
+      }
+    } catch (error) {
+      console.error("Error loading file info from localStorage:", error);
+      // Clear corrupted data
+      localStorage.removeItem("invoiceFileInfo");
+    }
+    return null;
   };
 
   // Save data to localStorage
@@ -155,14 +200,20 @@ function Home() {
   // Save file information to localStorage
   const saveFileInfo = (file) => {
     try {
-      const fileInfo = {
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        lastModified: file.lastModified,
+      // Convert file to base64 for storage
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const fileInfo = {
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          lastModified: file.lastModified,
+          data: e.target.result, // Base64 data
+        };
+        localStorage.setItem("invoiceFileInfo", JSON.stringify(fileInfo));
+        console.log("File info and data saved to localStorage:", fileInfo.name);
       };
-      localStorage.setItem("invoiceFileInfo", JSON.stringify(fileInfo));
-      console.log("File info saved to localStorage:", fileInfo);
+      reader.readAsDataURL(file);
     } catch (error) {
       console.error("Error saving file info to localStorage:", error);
     }
@@ -214,7 +265,7 @@ function Home() {
     const url = URL.createObjectURL(file);
     setFileUrl(url);
 
-    // Save file information to localStorage
+    // Save file information and data to localStorage
     saveFileInfo(file);
 
     // Auto-populate some form fields based on filename
@@ -227,8 +278,8 @@ function Home() {
   // Clear uploaded file and reset file input
   const clearUploadedFile = () => {
     setUploadedFile(null);
-    // Clean up the file URL to free memory
-    if (fileUrl) {
+    // Clean up the file URL to free memory (only if it's not the assets PDF)
+    if (fileUrl && fileUrl !== invoice) {
       URL.revokeObjectURL(fileUrl);
     }
     setFileUrl(null);
@@ -239,8 +290,7 @@ function Home() {
     if (fileInput) {
       fileInput.value = "";
     }
-    // Also clear any form field that was auto-populated
-    // This will be handled by the form's setFieldValue if needed
+    console.log("Uploaded file cleared");
   };
 
   // Handle drag and drop
@@ -301,7 +351,7 @@ function Home() {
     const url = URL.createObjectURL(file);
     setFileUrl(url);
 
-    // Save file information to localStorage
+    // Save file information and data to localStorage
     saveFileInfo(file);
 
     // Auto-populate some form fields based on filename
@@ -343,32 +393,44 @@ function Home() {
     // Clear localStorage data
     localStorage.removeItem("invoiceFormData");
     localStorage.removeItem("invoiceFileInfo");
-    
+
     // Clear uploaded file
     clearUploadedFile();
-    
+
     // Reset all form fields to empty
     if (setFieldValue) {
       const formFields = [
-        'fileName', 'vendor', 'purchaseOrderNumber', 'invoiceNumber', 
-        'totalAmount', 'invoiceDueDate', 'invoiceDescription', 'invoiceDate', 
-        'paymentTerms', 'glPostDate', 'lineAmount', 'account', 'description', 
-        'department', 'location', 'comments'
+        "fileName",
+        "vendor",
+        "purchaseOrderNumber",
+        "invoiceNumber",
+        "totalAmount",
+        "invoiceDueDate",
+        "invoiceDescription",
+        "invoiceDate",
+        "paymentTerms",
+        "glPostDate",
+        "lineAmount",
+        "account",
+        "description",
+        "department",
+        "location",
+        "comments",
       ];
-      
-      formFields.forEach(field => {
-        setFieldValue(field, '');
+
+      formFields.forEach((field) => {
+        setFieldValue(field, "");
       });
     }
-    
+
     // Show popup notification
     setShowClearDataPopup(true);
-    
+
     // Hide popup after 3 seconds
     setTimeout(() => {
       setShowClearDataPopup(false);
     }, 3000);
-    
+
     console.log("All data cleared successfully");
   };
 
@@ -576,7 +638,8 @@ function Home() {
                 <div>
                   <p className="font-semibold">Data Cleared!</p>
                   <p className="text-sm">
-                    All form data and uploaded files have been cleared successfully.
+                    All form data and uploaded files have been cleared
+                    successfully.
                   </p>
                 </div>
                 <button
