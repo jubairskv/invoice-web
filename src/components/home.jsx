@@ -126,11 +126,11 @@ function Home() {
       setPdfError(null);
       const fileUrl = URL.createObjectURL(file);
       setPdfFile(fileUrl);
-      
+
       // Auto-populate some form fields based on filename
-      const fileName = file.name.replace('.pdf', '');
+      const fileName = file.name.replace(".pdf", "");
       if (setFieldValue) {
-        setFieldValue('invoiceNumber', fileName);
+        setFieldValue("invoiceNumber", fileName);
       }
     } else {
       alert("Please select a valid PDF file");
@@ -156,7 +156,7 @@ function Home() {
   const handleDrop = (e, setFieldValue) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     const files = e.dataTransfer.files;
     if (files && files[0] && files[0].type === "application/pdf") {
       const file = files[0];
@@ -165,11 +165,11 @@ function Home() {
       setPdfError(null);
       const fileUrl = URL.createObjectURL(file);
       setPdfFile(fileUrl);
-      
+
       // Auto-populate some form fields based on filename
-      const fileName = file.name.replace('.pdf', '');
+      const fileName = file.name.replace(".pdf", "");
       if (setFieldValue) {
-        setFieldValue('invoiceNumber', fileName);
+        setFieldValue("invoiceNumber", fileName);
       }
     } else {
       alert("Please drop a valid PDF file");
@@ -357,7 +357,7 @@ function Home() {
           <div className="flex h-screen">
             {/* Left Panel - Invoice Upload */}
             <div className="w-1/3 bg-gray-200 p-8">
-              <div 
+              <div
                 className="bg-white border-2 border-dashed border-gray-400 rounded-xl p-12 text-center hover:border-blue-500 transition-colors cursor-pointer"
                 onDragOver={handleDragOver}
                 onDragEnter={handleDragEnter}
@@ -402,9 +402,11 @@ function Home() {
                           <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
                             <FiCheck className="w-5 h-5 text-white" />
                           </div>
-                          <span className="ml-2 text-green-600 font-semibold">PDF Uploaded Successfully</span>
+                          <span className="ml-2 text-green-600 font-semibold">
+                            PDF Uploaded Successfully
+                          </span>
                         </div>
-                        
+
                         {/* PDF Viewer */}
                         <div className="border border-gray-300 rounded-lg overflow-hidden bg-white">
                           <Document
@@ -420,7 +422,7 @@ function Home() {
                             />
                           </Document>
                         </div>
-                        
+
                         {/* PDF Controls */}
                         {numPages > 1 && (
                           <div className="mt-4 flex justify-center items-center space-x-3">
@@ -451,7 +453,7 @@ function Home() {
                             </button>
                           </div>
                         )}
-                        
+
                         {/* PDF Actions */}
                         <div className="mt-4 flex justify-center space-x-2">
                           <button
@@ -469,9 +471,9 @@ function Home() {
                           </button>
                           <button
                             onClick={() => {
-                              const link = document.createElement('a');
+                              const link = document.createElement("a");
                               link.href = pdfFile;
-                              link.download = 'invoice.pdf';
+                              link.download = "invoice.pdf";
                               link.click();
                             }}
                             className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
@@ -483,45 +485,54 @@ function Home() {
                     )}
                   </div>
                 ) : (
-                  <div className="w-28 h-28 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
-                    <div className="flex items-center space-x-18">
-                      <div className="w-8 h-12 bg-gray-300 rounded"></div>
-                      <div className="w-8 h-12 bg-gray-300 rounded"></div>
+                  <div className="w-50 h-50 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
+                    <div className="flex items-center space-x-40">
+                      <div className="w-8 h-20 bg-gray-300 rounded"></div>
+                      <div className="w-8 h-20 bg-gray-300 rounded"></div>
                     </div>
                   </div>
                 )}
 
-                 <div className="flex flex-col items-center">
-                   <input
-                     type="file"
-                     accept=".pdf"
-                     onChange={(e) => handleFileUpload(e, setFieldValue)}
-                     className="hidden"
-                     id="pdf-upload"
-                   />
-                   <label
-                     htmlFor="pdf-upload"
-                     className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors mb-4 flex items-center justify-center cursor-pointer w-64 shadow-lg"
-                   >
-                     <FiUpload className="w-5 h-5 mr-2" />
-                     Choose PDF File
-                   </label>
-                   
-                   <div className="flex items-center gap-2 text-gray-500 mb-4">
-                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                       <path d="M8 1.33334L8 14.6667" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                       <path d="M1.33331 8L14.6666 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                     </svg>
-                     <p className="text-sm">
-                       Click to upload or drag and drop
-                     </p>
-                   </div>
-                   
-                   {/* File format info */}
-                   <div className="text-xs text-gray-400 bg-gray-50 px-3 py-2 rounded-lg">
-                     Supported format: PDF only
-                   </div>
-                 </div>
+                <div className="flex flex-col items-center">
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    onChange={(e) => handleFileUpload(e, setFieldValue)}
+                    className="hidden"
+                    id="pdf-upload"
+                  />
+                  <label
+                    htmlFor="pdf-upload"
+                    className="bg-white border-2  border-gray-400 text-black px-7 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors mb-4 flex items-center justify-center cursor-pointer w-36 shadow-lg"
+                  >
+                    <FiUpload className="w-8 h-8 mr-2" />
+                    Upload File
+                  </label>
+
+                  <div className="flex items-center gap-2 text-gray-500 mb-4">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M8 1.33334L8 14.6667"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                      />
+                      <path
+                        d="M1.33331 8L14.6666 8"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                    <p className="text-sm">Click to upload or drag and drop</p>
+                  </div>
+                </div>
 
                 <button
                   onClick={() => populateDummyData(setFieldValue)}
@@ -1096,24 +1107,34 @@ function Home() {
                   </div>
 
                   {/* Form Submission */}
-                  <div className="flex justify-end space-x-4 mb-8">
+                  <div className="flex justify-end items-center space-x-3 mb-8">
+                    {/* Vertical Ellipsis Icon */}
+                    <div className="flex flex-col space-y-1 cursor-pointer hover:bg-gray-100 p-2 rounded">
+                      <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
+                      <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
+                      <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
+                    </div>
+                    
+                    {/* Populate Dummy Data Button - Save as Draft Style */}
                     <button
                       type="button"
                       onClick={() => populateDummyData(setFieldValue)}
-                      className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold"
+                      className="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
                     >
-                      Populate Dummy Data
+                      Save as Draft
                     </button>
+                    
+                    {/* Submit Invoice Button - Submit & New Style */}
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className={`px-8 py-3 rounded-lg transition-colors font-semibold ${
+                      className={`px-6 py-3 rounded-lg transition-colors font-medium ${
                         isSubmitting
                           ? "bg-gray-400 text-gray-200 cursor-not-allowed"
                           : "bg-blue-600 text-white hover:bg-blue-700"
                       }`}
                     >
-                      {isSubmitting ? "Submitting..." : "Submit Invoice"}
+                      {isSubmitting ? "Submitting..." : "Submit & New"}
                     </button>
                   </div>
                 </div>
