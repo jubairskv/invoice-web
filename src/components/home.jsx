@@ -471,34 +471,7 @@ function Home() {
                       </div>
                     </div>
 
-                    {/* PDF Viewer */}
-                    {fileUrl && (
-                      <>
-                        <div className="border border-gray-300 rounded-lg overflow-hidden bg-white mb-4">
-                          <iframe
-                            src={fileUrl}
-                            width="100%"
-                            height="400"
-                            className="border-0"
-                            title="PDF Preview"
-                          />
-                        </div>
-                        
-                        {/* Additional View PDF Button */}
-                        <div className="flex justify-center">
-                          <button
-                            onClick={() => {
-                              if (fileUrl) {
-                                window.open(fileUrl, '_blank');
-                              }
-                            }}
-                            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                          >
-                            Open PDF in New Tab
-                          </button>
-                        </div>
-                      </>
-                    )}
+                    
                   </div>
                 ) : (
                   <div className="w-50 h-50 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
