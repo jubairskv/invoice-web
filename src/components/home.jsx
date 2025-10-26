@@ -312,11 +312,11 @@ function Home() {
           <div className="flex h-screen">
             {/* Left Panel - Invoice Upload */}
             <div className="w-1/3 bg-gray-200 p-8">
-              <div className="border-2 border-dashed border-gray-400 rounded-xl p-12 text-center hover:border-blue-500 transition-colors cursor-pointer">
+              <div className="bg-white border-2 border-dashed border-gray-400 rounded-xl p-12 text-center hover:border-blue-500 transition-colors cursor-pointer">
                 <h2 className="text-2xl font-bold text-gray-900 mb-3">
                   Upload Your Invoice
                 </h2>
-                <p className="text-gray-500 mb-8 text-lg">
+                <p className="text-black mb-8 text-lg">
                   To auto-populate fields and save time
                 </p>
 
@@ -397,24 +397,32 @@ function Home() {
                   </div>
                 )}
 
-                <input
-                  type="file"
-                  accept=".pdf"
-                  onChange={handleFileUpload}
-                  className="hidden"
-                  id="pdf-upload"
-                />
-                <label
-                  htmlFor="pdf-upload"
-                  className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors mb-6 flex items-center mx-auto text-lg cursor-pointer"
-                >
-                  <FiUpload className="w-5 h-5 mr-3" />
-                  Upload File ↑
-                </label>
-
-                <p className="text-blue-600 text-base cursor-pointer hover:text-blue-800 font-medium">
-                  Click to upload or Drag and drop
-                </p>
+                <div className="flex flex-col items-center">
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                    id="pdf-upload"
+                  />
+                  <label
+                    htmlFor="pdf-upload"
+                    className="bg-white text-black px-8 py-4 border border-gray-400 rounded-lg font-semibold hover:bg-gray-100 transition-colors mb-4 flex items-center justify-center cursor-pointer w-64"
+                  >
+                    <FiUpload className="w-5 h-5 mr-2" />
+                    Upload File
+                  </label>
+                  
+                  <div className="flex items-center gap-2 text-gray-500">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M8 1.33334L8 14.6667" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                      <path d="M1.33331 8L14.6666 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                    <p className="text-sm">
+                      Click to upload or drag and drop
+                    </p>
+                  </div>
+                </div>
 
                 <button
                   onClick={() => populateDummyData(setFieldValue)}
