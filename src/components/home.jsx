@@ -128,7 +128,10 @@ function Home() {
         console.log("Uploaded file restored successfully:", savedFileInfo.name);
       } else {
         // Fallback for files without data
-        console.log("File info restored but no data available:", savedFileInfo.name);
+        console.log(
+          "File info restored but no data available:",
+          savedFileInfo.name
+        );
         setFileUrl(null);
       }
 
@@ -202,7 +205,7 @@ function Home() {
     try {
       // Convert file to base64 for storage
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         const fileInfo = {
           name: file.name,
           size: file.size,
@@ -756,7 +759,7 @@ function Home() {
                     />
                     <label
                       htmlFor="pdf-upload"
-                      className="bg-white border-2 border-gray-400 text-black px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors mb-4 flex items-center justify-center cursor-pointer w-32 shadow-lg whitespace-nowrap"
+                      className="bg-white border-2 border-gray-400 text-black px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors mb-4 flex items-center justify-center cursor-pointer w-48 shadow-lg"
                       onClick={() => {
                         // Clear the file input first to ensure it opens properly
                         const fileInput = document.getElementById("pdf-upload");
@@ -769,35 +772,18 @@ function Home() {
                         }
                       }}
                     >
-                      <FiUpload className="w-5 h-5 ml-0 text-black" />
+                      <FiUpload className="w-5 h-5 mr-2 text-black" />
                       {uploadedFile ? "Upload Another" : "Upload File"}
                     </label>
 
                     <div className="flex items-center gap-2 text-gray-500 mb-4">
-                      <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 16 16"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M8 1.33334L8 14.6667"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                        />
-                        <path
-                          d="M1.33331 8L14.6666 8"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                        />
-                      </svg>
                       <p className="text-sm">
-                        Click to upload or drag and drop
+                        <span className="font-semibold text-sky-400">
+                          Click to upload{" "}
+                        </span>
+                        or drag and drop
                       </p>
-                    </div>
+                    </div>s
                   </div>
                 </div>
               </div>
