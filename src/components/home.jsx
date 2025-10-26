@@ -62,8 +62,7 @@ const validationSchema = Yup.object({
     .max(200, "Description cannot exceed 200 characters"),
   department: Yup.string().required("Department is required"),
   location: Yup.string().required("Location is required"),
-  comments: Yup.string()
-    .max(1000, "Comments cannot exceed 1000 characters"),
+  comments: Yup.string().max(1000, "Comments cannot exceed 1000 characters"),
 });
 
 // Dummy data for form population
@@ -73,7 +72,8 @@ const dummyData = {
   invoiceNumber: "INV-001",
   totalAmount: 1250.0,
   invoiceDueDate: "12/31/2024",
-  invoiceDescription: "Monthly pest control services for office building - comprehensive treatment",
+  invoiceDescription:
+    "Monthly pest control services for office building - comprehensive treatment",
   invoiceDate: "12/01/2024",
   paymentTerms: "Net 30",
   glPostDate: "12/15/2024",
@@ -82,7 +82,8 @@ const dummyData = {
   description: "Professional pest control services for office building",
   department: "Facilities",
   location: "Main Office",
-  comments: "Regular monthly service - all areas treated including kitchen, break room, and storage areas",
+  comments:
+    "Regular monthly service - all areas treated including kitchen, break room, and storage areas",
 };
 
 function Home() {
@@ -187,7 +188,9 @@ function Home() {
           const glPostDate = new Date(values.glPostDate);
 
           if (dueDate < invoiceDate) {
-            setStatus({ error: "Invoice Due Date cannot be before Invoice Date" });
+            setStatus({
+              error: "Invoice Due Date cannot be before Invoice Date",
+            });
             setSubmitting(false);
             return;
           }
@@ -200,18 +203,20 @@ function Home() {
 
           // Save data to localStorage
           saveData(values);
-          
+
           // Clear any previous errors
           setStatus({ success: "Invoice submitted successfully!" });
           setSubmitting(false);
-          
+
           // Show success message
           setTimeout(() => {
             alert("Invoice submitted successfully! Data has been saved.");
           }, 100);
         } catch (error) {
           console.error("Submission error:", error);
-          setStatus({ error: "An error occurred while submitting. Please try again." });
+          setStatus({
+            error: "An error occurred while submitting. Please try again.",
+          });
           setSubmitting(false);
         }
       }}
@@ -268,8 +273,16 @@ function Home() {
               {status.error && (
                 <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">
                   <div className="flex items-center">
-                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                    <svg
+                      className="w-5 h-5 mr-2"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                     {status.error}
                   </div>
@@ -278,8 +291,16 @@ function Home() {
               {status.success && (
                 <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4">
                   <div className="flex items-center">
-                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    <svg
+                      className="w-5 h-5 mr-2"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                     {status.success}
                   </div>
@@ -368,8 +389,11 @@ function Home() {
                     )}
                   </div>
                 ) : (
-                  <div className="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
-                    <FiCheck className="w-12 h-12 text-white" />
+                  <div className="w-28 h-28 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
+                    <div className="flex items-center space-x-18">
+                      <div className="w-8 h-12 bg-gray-300 rounded"></div>
+                      <div className="w-8 h-12 bg-gray-300 rounded"></div>
+                    </div>
                   </div>
                 )}
 
@@ -540,12 +564,11 @@ function Home() {
                             </Field>
                             <FaChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
                           </div>
-                          {errors.invoiceNumber &&
-                            touched.invoiceNumber && (
-                              <p className="text-red-500 text-sm mt-1">
-                                {errors.invoiceNumber}
-                              </p>
-                            )}
+                          {errors.invoiceNumber && touched.invoiceNumber && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {errors.invoiceNumber}
+                            </p>
+                          )}
                         </div>
 
                         <div>
