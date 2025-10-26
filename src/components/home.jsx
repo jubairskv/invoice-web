@@ -1133,13 +1133,9 @@ function Home() {
                         <span className="text-sm font-medium text-gray-600">
                             {expenseToggle ? (
                               <>
-                                {values.lineAmount || "0.00"}% / $
+                                {values.lineAmount || "0.00"}% / %
                                 {values.totalAmount || "0.00"}
-                                {values.totalAmount && values.lineAmount && (
-                                  <span className="text-blue-600 ml-1">
-                                    (${((values.lineAmount || 0) * (values.totalAmount || 0) / 100).toFixed(2)})
-                                  </span>
-                                )}
+                                
                               </>
                             ) : (
                               <>
