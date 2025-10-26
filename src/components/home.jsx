@@ -16,11 +16,17 @@ import { TbMessage } from "react-icons/tb";
 import { FiUpload, FiCheck } from "react-icons/fi";
 import { Document, Page, pdfjs } from "react-pdf";
 
-// Set up PDF.js worker using local pdfjs-dist installation
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.js",
-  import.meta.url
-).toString();
+// Set up PDF.js worker with fallback options
+try {
+  // Try CDN first
+  pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+} catch {
+  // Fallback to local worker
+  pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+    "pdfjs-dist/build/pdf.worker.min.js",
+    import.meta.url
+  ).toString();
+}
 
 // Enhanced validation schema with comprehensive validation
 const validationSchema = Yup.object({
@@ -124,6 +130,8 @@ function Home() {
       setUploadedFile(file);
       setPdfLoading(true);
       setPdfError(null);
+      
+      // Create file URL and set PDF file
       const fileUrl = URL.createObjectURL(file);
       setPdfFile(fileUrl);
 
@@ -132,6 +140,14 @@ function Home() {
       if (setFieldValue) {
         setFieldValue("invoiceNumber", fileName);
       }
+
+      // Set a timeout to handle loading issues
+      setTimeout(() => {
+        if (pdfLoading) {
+          setPdfLoading(false);
+          setPdfError("PDF loading timeout. Please try a different file or check if the file is corrupted.");
+        }
+      }, 10000); // 10 second timeout
     } else {
       alert("Please select a valid PDF file");
     }
@@ -163,6 +179,8 @@ function Home() {
       setUploadedFile(file);
       setPdfLoading(true);
       setPdfError(null);
+      
+      // Create file URL and set PDF file
       const fileUrl = URL.createObjectURL(file);
       setPdfFile(fileUrl);
 
@@ -171,6 +189,14 @@ function Home() {
       if (setFieldValue) {
         setFieldValue("invoiceNumber", fileName);
       }
+
+      // Set a timeout to handle loading issues
+      setTimeout(() => {
+        if (pdfLoading) {
+          setPdfLoading(false);
+          setPdfError("PDF loading timeout. Please try a different file or check if the file is corrupted.");
+        }
+      }, 10000); // 10 second timeout
     } else {
       alert("Please drop a valid PDF file");
     }
@@ -374,24 +400,60 @@ function Home() {
                 {pdfFile ? (
                   <div className="mb-6">
                     {pdfLoading && (
-                      <div className="flex justify-center items-center h-48">
-                        <div className="text-blue-600">Loading PDF...</div>
+                      <div className="flex flex-col justify-center items-center h-48">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+                        <div className="text-blue-600 font-medium">Loading PDF...</div>
+                        <div className="text-gray-500 text-sm mt-2">This may take a few moments</div>
+                        <button
+                          onClick={() => {
+                            setPdfFile(null);
+                            setUploadedFile(null);
+                            setPdfError(null);
+                            setPdfLoading(false);
+                            setPageNumber(1);
+                            setNumPages(null);
+                          }}
+                          className="mt-4 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 text-sm"
+                        >
+                          Cancel
+                        </button>
                       </div>
                     )}
                     {pdfError && (
-                      <div className="flex justify-center items-center h-48">
+                      <div className="flex flex-col justify-center items-center h-48">
                         <div className="text-red-600 text-center">
-                          <p>{pdfError}</p>
-                          <button
-                            onClick={() => {
-                              setPdfFile(null);
-                              setPdfError(null);
-                              setPdfLoading(false);
-                            }}
-                            className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                          >
-                            Try Again
-                          </button>
+                          <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </div>
+                          <p className="font-medium mb-2">PDF Loading Failed</p>
+                          <p className="text-sm text-gray-600 mb-4">{pdfError}</p>
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => {
+                                setPdfFile(null);
+                                setUploadedFile(null);
+                                setPdfError(null);
+                                setPdfLoading(false);
+                                setPageNumber(1);
+                                setNumPages(null);
+                              }}
+                              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 text-sm"
+                            >
+                              Clear
+                            </button>
+                            <button
+                              onClick={() => {
+                                setPdfError(null);
+                                setPdfLoading(true);
+                                // Retry loading the same file
+                              }}
+                              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                            >
+                              Retry
+                            </button>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -414,6 +476,31 @@ function Home() {
                             onLoadSuccess={onDocumentLoadSuccess}
                             onLoadError={onDocumentLoadError}
                             className="max-h-96 overflow-auto"
+                            loading={
+                              <div className="flex justify-center items-center h-48">
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                              </div>
+                            }
+                            error={
+                              <div className="flex flex-col justify-center items-center h-48 p-4">
+                                <div className="text-red-600 text-center">
+                                  <p className="font-medium mb-2">Unable to display PDF</p>
+                                  <p className="text-sm text-gray-600 mb-4">The PDF file may be corrupted or password protected</p>
+                                  <button
+                                    onClick={() => {
+                                      const link = document.createElement("a");
+                                      link.href = pdfFile;
+                                      link.download = "invoice.pdf";
+                                      link.target = "_blank";
+                                      link.click();
+                                    }}
+                                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                                  >
+                                    Download Instead
+                                  </button>
+                                </div>
+                              </div>
+                            }
                           >
                             <Page
                               pageNumber={pageNumber}
