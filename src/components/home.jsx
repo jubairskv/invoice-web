@@ -15,6 +15,8 @@ import { TbMessage } from "react-icons/tb";
 import { FiUpload, FiCheck } from "react-icons/fi";
 import { pdfjs } from "react-pdf";
 import PdfComponent from "./pdfcomp";
+import { Player } from "@lottiefiles/react-lottie-player";
+import FileCheck from "../assets/File Search.json";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -479,11 +481,13 @@ function Home() {
                     <PdfComponent fileUrl={fileUrl} />
                   </div>
                 ) : (
-                  <div className="w-50 h-50 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
-                    <div className="flex items-center space-x-40">
-                      <div className="w-8 h-20 bg-gray-300 rounded"></div>
-                      <div className="w-8 h-20 bg-gray-300 rounded"></div>
-                    </div>
+                  <div className="flex items-center justify-center">
+                    <Player
+                      src={FileCheck}
+                      autoplay
+                      loop
+                      className="w-72 h-72"
+                    />
                   </div>
                 )}
 
