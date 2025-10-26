@@ -94,6 +94,7 @@ function Home() {
   const [uploadedFile, setUploadedFile] = useState(null);
   const [fileUrl, setFileUrl] = useState(null);
   const [isDragOver, setIsDragOver] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   const tabs = ["Vendor Details", "Invoice Details", "Comments"];
 
@@ -313,7 +314,8 @@ function Home() {
 
           // Show success message and auto-populate form
           setTimeout(() => {
-            alert("Invoice submitted successfully! Data has been saved to localStorage and form will be auto-populated.");
+            // Show popup notification
+            setShowSuccessPopup(true);
             // Auto-populate form with saved data
             const savedData = loadSavedData();
             Object.keys(savedData).forEach((key) => {
@@ -321,6 +323,11 @@ function Home() {
             });
             // Clear uploaded file to start fresh
             clearUploadedFile();
+            
+            // Hide popup after 5 seconds
+            setTimeout(() => {
+              setShowSuccessPopup(false);
+            }, 5000);
           }, 100);
         } catch (error) {
           console.error("Submission error:", error);
@@ -331,7 +338,7 @@ function Home() {
         }
       }}
     >
-      {({ errors, touched, setFieldValue, values, status, isSubmitting }) => (
+      {({ errors, touched, setFieldValue, values, isSubmitting }) => (
         <div className="min-h-screen bg-white">
           {/* Header */}
           <div className="sticky top-0 z-50 bg-white border-b border-gray-200 px-8 py-6 shadow-sm">
@@ -377,45 +384,26 @@ function Home() {
             </div>
           </div>
 
-          {/* Status Messages */}
-          {status && (
-            <div className="px-8 py-4">
-              {status.error && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">
-                  <div className="flex items-center">
-                    <svg
-                      className="w-5 h-5 mr-2"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    {status.error}
-                  </div>
-                </div>
-              )}
-              {status.success && (
-                <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4">
-                  <div className="flex items-center">
-                    <svg
-                      className="w-5 h-5 mr-2"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    {status.success}
-                  </div>
-                </div>
-              )}
+          {/* Success Popup Notification */}
+          {showSuccessPopup && (
+            <div className="fixed top-4 right-4 z-50 bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center space-x-3 animate-slide-in">
+              <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div>
+                <p className="font-semibold">Success!</p>
+                <p className="text-sm">Invoice submitted successfully! Data has been saved to localStorage.</p>
+              </div>
+              <button
+                onClick={() => setShowSuccessPopup(false)}
+                className="text-green-200 hover:text-white transition-colors"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
             </div>
           )}
 
