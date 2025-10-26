@@ -118,7 +118,7 @@ function Home() {
   };
 
   // Handle PDF file upload
-  const handleFileUpload = (event) => {
+  const handleFileUpload = (event, setFieldValue) => {
     const file = event.target.files[0];
     if (file && file.type === "application/pdf") {
       setUploadedFile(file);
@@ -126,8 +126,53 @@ function Home() {
       setPdfError(null);
       const fileUrl = URL.createObjectURL(file);
       setPdfFile(fileUrl);
+      
+      // Auto-populate some form fields based on filename
+      const fileName = file.name.replace('.pdf', '');
+      if (setFieldValue) {
+        setFieldValue('invoiceNumber', fileName);
+      }
     } else {
       alert("Please select a valid PDF file");
+    }
+  };
+
+  // Handle drag and drop
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e, setFieldValue) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const files = e.dataTransfer.files;
+    if (files && files[0] && files[0].type === "application/pdf") {
+      const file = files[0];
+      setUploadedFile(file);
+      setPdfLoading(true);
+      setPdfError(null);
+      const fileUrl = URL.createObjectURL(file);
+      setPdfFile(fileUrl);
+      
+      // Auto-populate some form fields based on filename
+      const fileName = file.name.replace('.pdf', '');
+      if (setFieldValue) {
+        setFieldValue('invoiceNumber', fileName);
+      }
+    } else {
+      alert("Please drop a valid PDF file");
     }
   };
 
@@ -312,7 +357,13 @@ function Home() {
           <div className="flex h-screen">
             {/* Left Panel - Invoice Upload */}
             <div className="w-1/3 bg-gray-200 p-8">
-              <div className="bg-white border-2 border-dashed border-gray-400 rounded-xl p-12 text-center hover:border-blue-500 transition-colors cursor-pointer">
+              <div 
+                className="bg-white border-2 border-dashed border-gray-400 rounded-xl p-12 text-center hover:border-blue-500 transition-colors cursor-pointer"
+                onDragOver={handleDragOver}
+                onDragEnter={handleDragEnter}
+                onDragLeave={handleDragLeave}
+                onDrop={(e) => handleDrop(e, setFieldValue)}
+              >
                 <h2 className="text-2xl font-bold text-gray-900 mb-3">
                   Upload Your Invoice
                 </h2>
@@ -346,32 +397,47 @@ function Home() {
                     )}
                     {!pdfLoading && !pdfError && (
                       <>
-                        <Document
-                          file={pdfFile}
-                          onLoadSuccess={onDocumentLoadSuccess}
-                          onLoadError={onDocumentLoadError}
-                          className="max-h-96 overflow-auto border border-gray-300 rounded"
-                        >
-                          <Page
-                            pageNumber={pageNumber}
-                            width={300}
-                            className="shadow-lg"
-                          />
-                        </Document>
+                        {/* Success indicator */}
+                        <div className="flex items-center justify-center mb-4">
+                          <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                            <FiCheck className="w-5 h-5 text-white" />
+                          </div>
+                          <span className="ml-2 text-green-600 font-semibold">PDF Uploaded Successfully</span>
+                        </div>
+                        
+                        {/* PDF Viewer */}
+                        <div className="border border-gray-300 rounded-lg overflow-hidden bg-white">
+                          <Document
+                            file={pdfFile}
+                            onLoadSuccess={onDocumentLoadSuccess}
+                            onLoadError={onDocumentLoadError}
+                            className="max-h-96 overflow-auto"
+                          >
+                            <Page
+                              pageNumber={pageNumber}
+                              width={300}
+                              className="shadow-lg mx-auto"
+                            />
+                          </Document>
+                        </div>
+                        
+                        {/* PDF Controls */}
                         {numPages > 1 && (
-                          <div className="mt-4 flex justify-center space-x-2">
+                          <div className="mt-4 flex justify-center items-center space-x-3">
                             <button
                               onClick={() =>
                                 setPageNumber(Math.max(1, pageNumber - 1))
                               }
                               disabled={pageNumber <= 1}
-                              className="px-3 py-1 bg-blue-600 text-white rounded disabled:bg-gray-400"
+                              className="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:bg-gray-400 hover:bg-blue-700 transition-colors"
                             >
-                              Previous
+                              ← Previous
                             </button>
-                            <span className="px-3 py-1 text-sm">
-                              Page {pageNumber} of {numPages}
-                            </span>
+                            <div className="px-4 py-2 bg-gray-100 rounded-lg">
+                              <span className="text-sm font-medium text-gray-700">
+                                Page {pageNumber} of {numPages}
+                              </span>
+                            </div>
                             <button
                               onClick={() =>
                                 setPageNumber(
@@ -379,12 +445,40 @@ function Home() {
                                 )
                               }
                               disabled={pageNumber >= numPages}
-                              className="px-3 py-1 bg-blue-600 text-white rounded disabled:bg-gray-400"
+                              className="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:bg-gray-400 hover:bg-blue-700 transition-colors"
                             >
-                              Next
+                              Next →
                             </button>
                           </div>
                         )}
+                        
+                        {/* PDF Actions */}
+                        <div className="mt-4 flex justify-center space-x-2">
+                          <button
+                            onClick={() => {
+                              setPdfFile(null);
+                              setUploadedFile(null);
+                              setPdfError(null);
+                              setPdfLoading(false);
+                              setPageNumber(1);
+                              setNumPages(null);
+                            }}
+                            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
+                          >
+                            Remove PDF
+                          </button>
+                          <button
+                            onClick={() => {
+                              const link = document.createElement('a');
+                              link.href = pdfFile;
+                              link.download = 'invoice.pdf';
+                              link.click();
+                            }}
+                            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
+                          >
+                            Download PDF
+                          </button>
+                        </div>
                       </>
                     )}
                   </div>
@@ -397,32 +491,37 @@ function Home() {
                   </div>
                 )}
 
-                <div className="flex flex-col items-center">
-                  <input
-                    type="file"
-                    accept=".pdf"
-                    onChange={handleFileUpload}
-                    className="hidden"
-                    id="pdf-upload"
-                  />
-                  <label
-                    htmlFor="pdf-upload"
-                    className="bg-white text-black px-8 py-4 border border-gray-400 rounded-lg font-semibold hover:bg-gray-100 transition-colors mb-4 flex items-center justify-center cursor-pointer w-64"
-                  >
-                    <FiUpload className="w-5 h-5 mr-2" />
-                    Upload File
-                  </label>
-                  
-                  <div className="flex items-center gap-2 text-gray-500">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M8 1.33334L8 14.6667" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                      <path d="M1.33331 8L14.6666 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                    </svg>
-                    <p className="text-sm">
-                      Click to upload or drag and drop
-                    </p>
-                  </div>
-                </div>
+                 <div className="flex flex-col items-center">
+                   <input
+                     type="file"
+                     accept=".pdf"
+                     onChange={(e) => handleFileUpload(e, setFieldValue)}
+                     className="hidden"
+                     id="pdf-upload"
+                   />
+                   <label
+                     htmlFor="pdf-upload"
+                     className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors mb-4 flex items-center justify-center cursor-pointer w-64 shadow-lg"
+                   >
+                     <FiUpload className="w-5 h-5 mr-2" />
+                     Choose PDF File
+                   </label>
+                   
+                   <div className="flex items-center gap-2 text-gray-500 mb-4">
+                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                       <path d="M8 1.33334L8 14.6667" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                       <path d="M1.33331 8L14.6666 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                     </svg>
+                     <p className="text-sm">
+                       Click to upload or drag and drop
+                     </p>
+                   </div>
+                   
+                   {/* File format info */}
+                   <div className="text-xs text-gray-400 bg-gray-50 px-3 py-2 rounded-lg">
+                     Supported format: PDF only
+                   </div>
+                 </div>
 
                 <button
                   onClick={() => populateDummyData(setFieldValue)}
