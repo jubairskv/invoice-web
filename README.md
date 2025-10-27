@@ -2,6 +2,10 @@
 
 A fully functional React application for creating and managing invoices with comprehensive form validation, PDF upload capabilities, and session management.
 
+Repo URL : https://github.com/jubairskv/invoice-web
+
+Hosted URL: https://jubairskv.github.io/invoice-web/
+
 # Password for Login:
    User Name :Admin
    Password:Abc@123
