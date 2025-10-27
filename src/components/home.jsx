@@ -802,7 +802,7 @@ function Home() {
               {/* Right Panel - Form Details */}
               <div className="flex-1 bg-gray-200 p-8">
                 <Form>
-                  {/* Vendor Details */}
+                
                   <div className="mb-10">
                     <div className="flex items-center mb-6">
                       <div className="bg-blue-200 rounded-full p-4">
@@ -856,7 +856,7 @@ function Home() {
                     </div>
                   </div>
 
-                  {/* Invoice Details */}
+                  
                   <div className="mb-10">
                     <div className="flex items-center mb-6">
                       <div className="bg-blue-200 rounded-full p-4 mr-4">
@@ -867,7 +867,7 @@ function Home() {
                       </h3>
                     </div>
 
-                    {/* General Information Section */}
+                    
                     <div className="mb-6">
                       <h4 className="text-xl font-bold text-gray-900">
                         General Information
@@ -1090,7 +1090,7 @@ function Home() {
                         </div>
                       </div>
 
-                      {/* Invoice Description - Full Width */}
+                      
                       <div className="mt-6">
                         <label className="block text-sm font-semibold text-gray-700 mb-2">
                           Invoice Description{" "}
@@ -1316,7 +1316,7 @@ function Home() {
                         </div>
                       </div>
 
-                      {/* Description - Full Width */}
+                      
                       <div className="mt-6">
                         <label className="block text-sm font-semibold text-gray-700 mb-2">
                           Description <span className="text-red-500">*</span>
@@ -1392,12 +1392,9 @@ function Home() {
 
                     {/* Form Submission */}
                     <div className="flex justify-end items-center space-x-3 mb-8 bg-white p-4">
-                      {/* Vertical Ellipsis Icon */}
                       <div className="flex flex-col space-y-1 cursor-pointer hover:bg-gray-100 p-4 rounded">
                         <BsThreeDotsVertical className="text-gray-500 mr-18" />
                       </div>
-
-                      {/* Populate Dummy Data Button - Save as Draft Style */}
 
                       <button
                         type="button"
@@ -1407,7 +1404,6 @@ function Home() {
                         Save as Draft
                       </button>
 
-                      {/* Clear Saved Data Button */}
                       <button
                         type="button"
                         onClick={() => clearSavedData(setFieldValue)}
@@ -1416,7 +1412,6 @@ function Home() {
                         Clear Saved Data
                       </button>
 
-                      {/* Submit Invoice Button - Submit & New Style */}
                       <button
                         type="submit"
                         disabled={isSubmitting}
