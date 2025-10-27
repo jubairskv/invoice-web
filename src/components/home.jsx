@@ -275,7 +275,8 @@ function Home() {
     // Auto-populate some form fields based on filename
     const fileName = file.name.replace(".pdf", "");
     if (setFieldValue) {
-      setFieldValue("invoiceNumber", fileName);
+      setFieldValue("fileName", file.name); // Set the full filename
+      setFieldValue("invoiceNumber", fileName); // Set filename without extension
     }
   };
 
@@ -361,7 +362,8 @@ function Home() {
     // Auto-populate some form fields based on filename
     const fileName = file.name.replace(".pdf", "");
     if (setFieldValue) {
-      setFieldValue("invoiceNumber", fileName);
+      setFieldValue("fileName", file.name); // Set the full filename
+      setFieldValue("invoiceNumber", fileName); // Set filename without extension
     }
   };
 
