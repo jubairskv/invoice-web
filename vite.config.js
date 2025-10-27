@@ -16,7 +16,7 @@ export default defineConfig({
       allow: [".."],
     },
   },
-  base: "/invoice-web",
+  base: "/invoice-web/",
   build: {
     rollupOptions: {
       input: {

@@ -228,7 +228,7 @@ function Home() {
     localStorage.removeItem("session");
     localStorage.removeItem("invoiceFormData");
     localStorage.removeItem("invoiceFileInfo");
-    navigate("/invoice-web");
+    navigate("/");
   };
 
   // Handle PDF file upload

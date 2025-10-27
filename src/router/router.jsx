@@ -6,7 +6,7 @@ import PublicRoute from "../components/PublicRoute";
 
 const appRouter = createHashRouter([
   {
-    path: "/invoice-web",
+    path: "/",
     element: (
       <PublicRoute>
         <Login />
@@ -14,7 +14,7 @@ const appRouter = createHashRouter([
     ),
   },
   {
-    path: "/invoice-web/home",
+    path: "/home",
     element: (
       <ProtectedRoute>
         <Home />

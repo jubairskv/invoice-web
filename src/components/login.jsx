@@ -68,7 +68,7 @@ const Login = () => {
       localStorage.setItem("session", JSON.stringify(sessionData));
 
       // Redirect to main application
-      navigate("/invoice-web/home");
+      navigate("/home");
     } catch {
       setErrorMessage("An error occurred during login. Please try again.");
       setShowModal(true);

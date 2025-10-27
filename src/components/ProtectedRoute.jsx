@@ -9,7 +9,7 @@ const ProtectedRoute = ({ children }) => {
     return children;
   }
   
-  return <Navigate to="/invoice-web" replace />;
+  return <Navigate to="/" replace />;
 };
 
 export default ProtectedRoute;
