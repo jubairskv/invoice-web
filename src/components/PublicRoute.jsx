@@ -6,7 +6,7 @@ const PublicRoute = ({ children }) => {
   const sessionData = session ? JSON.parse(session) : null;
   
   if (sessionData && sessionData.isLoggedIn) {
-    return <Navigate to="/home" replace />;
+    return <Navigate to="/invoice-web/home" replace />;
   }
   
   return children;
