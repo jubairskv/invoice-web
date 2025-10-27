@@ -120,7 +120,7 @@ function Home() {
       setUploadedFile(mockFile);
 
       // If it's the assets PDF, use the imported file URL
-      if (savedFileInfo.name === "Jubair K.pdf") {
+      if (savedFileInfo.name === "Jubair K.pdf" || savedFileInfo.isAssetsFile) {
         setFileUrl(invoice);
         console.log("Assets PDF restored successfully");
       } else if (savedFileInfo.data) {
@@ -386,8 +386,42 @@ function Home() {
     // Create file URL for viewing (using the imported PDF)
     setFileUrl(invoice);
 
-    // Save file information to localStorage
-    saveFileInfo(mockFile);
+    // Save file information to localStorage with proper data handling
+    try {
+      // For the assets PDF, we need to fetch it and convert to base64
+      fetch(invoice)
+        .then(response => response.blob())
+        .then(blob => {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            const fileInfo = {
+              name: mockFile.name,
+              size: mockFile.size,
+              type: mockFile.type,
+              lastModified: mockFile.lastModified,
+              data: e.target.result, // Base64 data
+              isAssetsFile: true, // Flag to identify this as assets file
+            };
+            localStorage.setItem("invoiceFileInfo", JSON.stringify(fileInfo));
+            console.log("Assets PDF file info and data saved to localStorage:", fileInfo.name);
+          };
+          reader.readAsDataURL(blob);
+        })
+        .catch(error => {
+          console.error("Error fetching assets PDF:", error);
+          // Fallback: save without data
+          const fileInfo = {
+            name: mockFile.name,
+            size: mockFile.size,
+            type: mockFile.type,
+            lastModified: mockFile.lastModified,
+            isAssetsFile: true,
+          };
+          localStorage.setItem("invoiceFileInfo", JSON.stringify(fileInfo));
+        });
+    } catch (error) {
+      console.error("Error saving assets PDF info:", error);
+    }
 
     console.log("Dummy data populated and PDF file uploaded from assets");
   };
