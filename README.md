@@ -10,6 +10,7 @@ A fully functional React application for creating and managing invoices with com
 - **Auto-login** functionality for returning users
 - **Logout** functionality with session cleanup
 - **Password strength validation** with security requirements
+- **Responsive login layout** with adaptive logo and form sections
 
 ###  Design Replication
 - **Accurate design implementation** matching provided specifications
@@ -26,16 +27,20 @@ A fully functional React application for creating and managing invoices with com
 
 ###  Data Persistence
 - **localStorage integration** for form data persistence
-- **Auto-save functionality** on form submission
-- **Data restoration** on page reload
+- **Auto-save functionality** with debounced saving
+- **Data restoration** on page reload with file recovery
 - **Session persistence** across browser sessions
+- **Draft saving** with "Save as Draft" functionality
+- **File and form data** synchronized persistence
 
 ###  PDF Upload and Display
 - **PDF file upload** with drag-and-drop support
-- **PDF preview** using react-pdf library
+- **PDF preview** using react-pdf library with PDF.js integration
 - **Multi-page PDF support** with navigation controls
 - **Error handling** for invalid file types
 - **Loading states** for better user experience
+- **PDF persistence** with localStorage for draft saving
+- **Base64 encoding** for file storage and retrieval
 
 ###  Dummy Data Population
 - **One-click population** of all form fields
@@ -48,6 +53,10 @@ A fully functional React application for creating and managing invoices with com
 - **User-friendly error handling** with visual feedback
 - **Loading states** and disabled states during submission
 - **Success/error notifications** with status messages
+- **Lottie animations** for enhanced user experience
+- **Responsive design** with mobile-first approach
+- **File drag-and-drop** interface
+- **Auto-populate functionality** for testing
 
 ## Technology Stack
 
@@ -56,8 +65,10 @@ A fully functional React application for creating and managing invoices with com
 - **Yup 1.7.1** - Schema validation
 - **React Router DOM 7.9.4** - Client-side routing
 - **React PDF 10.2.0** - PDF display functionality
+- **PDF.js 5.4.296** - PDF rendering engine
 - **Tailwind CSS 4.1.16** - Styling framework
 - **React Icons 5.5.0** - Icon library
+- **Lottie Files 3.6.0** - Animation library
 - **Vite 7.1.7** - Build tool and development server
 
 ## Installation and Setup
@@ -127,6 +138,8 @@ The built files will be in the `dist` directory.
    - Click "Submit Invoice" to save the form
    - Data is automatically saved to localStorage
    - Success message confirms submission
+   - Click "Submit & New" to submit and start a new invoice
+   - Click "Save as Draft" to save current progress
 
 ### Quick Testing
 - Click "Populate with Dummy Data" to quickly fill all fields
@@ -136,6 +149,8 @@ The built files will be in the `dist` directory.
 - **Auto-login**: Returning users are automatically logged in
 - **Logout**: Click the logout button to clear session and return to login
 - **Data persistence**: Form data persists across page reloads
+- **File persistence**: Uploaded PDFs are saved and restored with drafts
+- **Draft management**: Save work in progress and resume later
 
 ## Form Validation Rules
 
@@ -169,18 +184,24 @@ The built files will be in the `dist` directory.
 ```
 src/
 ├── components/
-│   ├── home.jsx              # Main invoice form component
-│   ├── login.jsx              # Login page component
-│   ├── LoginForm.jsx          # Login form with validation
-│   ├── ModalPop.jsx           # Error modal component
-│   ├── ProtectedRoute.jsx     # Route protection wrapper
-│   └── PublicRoute.jsx         # Public route wrapper
+│   ├── home.jsx              # Main invoice form component (1400+ lines)
+│   ├── login.jsx             # Login page layout with responsive design
+│   ├── LoginForm.jsx         # Login form with Formik validation
+│   ├── ModalPop.jsx          # Error modal component
+│   ├── pdfcomp.jsx           # PDF preview component
+│   ├── ProtectedRoute.jsx    # Route protection wrapper
+│   └── PublicRoute.jsx       # Public route wrapper
 ├── router/
-│   └── router.jsx             # Application routing configuration
-├── App.jsx                    # Main application component
-├── main.jsx                   # Application entry point
-├── App.css                    # Application styles
-└── index.css                  # Global styles
+│   └── router.jsx            # Application routing configuration
+├── assets/
+│   ├── Data.jpg              # Company logo
+│   ├── Jubair K.pdf          # Sample PDF file
+│   ├── File Search.json      # Lottie animation file
+│   └── react.svg             # React logo
+├── App.jsx                   # Main application component
+├── main.jsx                  # Application entry point
+├── App.css                   # Application styles
+└── index.css                 # Global styles
 ```
 
 ## Browser Compatibility
@@ -222,6 +243,7 @@ The application can be deployed to any static hosting service:
 ### Environment Variables
 No environment variables are required for basic functionality.
 
+
 ## Contributing
 
 1. Fork the repository
@@ -230,14 +252,5 @@ No environment variables are required for basic functionality.
 4. Run tests and linting
 5. Submit a pull request
 
-## License
-
-This project is licensed under the MIT License.
-
-## Support
-
-For support or questions, please open an issue in the repository.
-
----
 
 **Note**: This application is designed for demonstration purposes and includes comprehensive validation, error handling, and user experience features as requested in the requirements.
