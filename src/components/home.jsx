@@ -794,7 +794,6 @@ function Home() {
                         or drag and drop
                       </p>
                     </div>
-                    s
                   </div>
                 </div>
               </div>
@@ -802,7 +801,6 @@ function Home() {
               {/* Right Panel - Form Details */}
               <div className="flex-1 bg-gray-200 p-8">
                 <Form>
-                
                   <div className="mb-10">
                     <div className="flex items-center mb-6">
                       <div className="bg-blue-200 rounded-full p-4">
@@ -847,7 +845,7 @@ function Home() {
                       <div className="flex justify-center">
                         <button
                           type="button"
-                          className="flex items-center text-blue-600 hover:text-blue-800 text-base font-semibold transition-colors"
+                          className="flex items-center text-sky-500 hover:text-sky-700 text-base font-semibold transition-colors"
                         >
                           <FaChevronDown className="w-3 h-3 mr-2" />
                           View Vendor Details
@@ -856,7 +854,6 @@ function Home() {
                     </div>
                   </div>
 
-                  
                   <div className="mb-10">
                     <div className="flex items-center mb-6">
                       <div className="bg-blue-200 rounded-full p-4 mr-4">
@@ -867,7 +864,6 @@ function Home() {
                       </h3>
                     </div>
 
-                    
                     <div className="mb-6">
                       <h4 className="text-xl font-bold text-gray-900">
                         General Information
@@ -1090,7 +1086,6 @@ function Home() {
                         </div>
                       </div>
 
-                      
                       <div className="mt-6">
                         <label className="block text-sm font-semibold text-gray-700 mb-2">
                           Invoice Description{" "}
@@ -1316,7 +1311,6 @@ function Home() {
                         </div>
                       </div>
 
-                      
                       <div className="mt-6">
                         <label className="block text-sm font-semibold text-gray-700 mb-2">
                           Description <span className="text-red-500">*</span>
