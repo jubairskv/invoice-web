@@ -271,6 +271,7 @@ function Home() {
 
     // Save file information and data to localStorage
     saveFileInfo(file);
+    
 
     // Auto-populate some form fields based on filename
     const fileName = file.name.replace(".pdf", "");

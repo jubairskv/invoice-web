@@ -85,6 +85,7 @@ const Login = () => {
         />
       </div>
 
+
       <div className="mx-auto my-auto px-4 dark:bg-slate-900 dark:text-white py-2 sm:w-[40%] md:w-[40%] lg:w-[40%] xl:w-[40%]">
         <div className="flex flex-col items-start mb-10">
           <h1 className="font-roboto font-bold dark:bg-slate-900 dark:text-white text-4xl text-wrap text-start p-0 sm:p-16 md:p-0 lg:p-0 mt-10">
