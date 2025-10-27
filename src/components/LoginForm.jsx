@@ -84,7 +84,7 @@ const LoginForm = ({ onSubmit }) => {
             )}
           </div>
 
-          <div className="mb-6 flex items-center dark:bg-[#161D31] dark:text-white">
+          {/* <div className="mb-6 flex items-center dark:bg-[#161D31] dark:text-white">
             <Field
               name="rememberMe"
               type="checkbox"
@@ -96,7 +96,7 @@ const LoginForm = ({ onSubmit }) => {
             >
               Remember Me
             </label>
-          </div>
+          </div> */}
 
           {/* <div className="mb-6 text-sm text-blue-500 cursor-pointer">
             <Link to="/forgotpassword">Forgot Password?</Link>

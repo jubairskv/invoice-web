@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Modal from "./ModalPop";
 import LoginForm from "./LoginForm";
+import Logo from "../assets/Data.jpg";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -25,9 +26,18 @@ const Login = () => {
       }
 
       // Check for common weak passwords
-      const weakPasswords = ['password', '123456', '12345678', 'qwerty', 'abc123', 'password123'];
+      const weakPasswords = [
+        "password",
+        "123456",
+        "12345678",
+        "qwerty",
+        "abc123",
+        "password123",
+      ];
       if (weakPasswords.includes(values.password.toLowerCase())) {
-        setErrorMessage("Password is too weak. Please choose a stronger password.");
+        setErrorMessage(
+          "Password is too weak. Please choose a stronger password."
+        );
         setShowModal(true);
         return;
       }
@@ -52,11 +62,11 @@ const Login = () => {
         userName: values.userName,
         password: values.password,
         loginTime: new Date().toISOString(),
-        rememberMe: values.rememberMe
+        rememberMe: values.rememberMe,
       };
-      
+
       localStorage.setItem("session", JSON.stringify(sessionData));
-      
+
       // Redirect to main application
       navigate("/invoice-web/home");
     } catch {
@@ -66,8 +76,14 @@ const Login = () => {
   };
 
   return (
-    <div className="flex flex-row h-screen   font-robotoCondensed bg-color-white ">
-      <div className="w-[50%] h-full bg-blue-500   sm:flex flex-col justify-center items-center hidden overflow-hidden"></div>
+    <div className="flex flex-col lg:flex-row h-screen font-robotoCondensed bg-color-white">
+      <div className="w-full lg:w-[50%] h-[40vh] lg:h-full flex flex-col justify-center items-center overflow-hidden">
+        <img
+          src={Logo}
+          alt="logo"
+          className="w-full h-full object-contain lg:object-cover max-w-md lg:max-w-none"
+        />
+      </div>
 
       <div className="mx-auto my-auto px-4 dark:bg-slate-900 dark:text-white py-2 sm:w-[40%] md:w-[40%] lg:w-[40%] xl:w-[40%]">
         <div className="flex flex-col items-start mb-10">
@@ -81,7 +97,7 @@ const Login = () => {
         <div className="absolute top-4  dark:text-white right-36">
           {/* <ThemeToggle /> */}
         </div>
-         <LoginForm onSubmit={handleFormSubmit} />
+        <LoginForm onSubmit={handleFormSubmit} />
       </div>
 
       {showModal && (
