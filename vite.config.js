@@ -6,15 +6,22 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   optimizeDeps: {
-    include: ['react-pdf', 'pdfjs-dist']
+    include: ["react-pdf", "pdfjs-dist"],
   },
   define: {
-    global: 'globalThis',
+    global: "globalThis",
   },
   server: {
     fs: {
-      allow: ['..']
-    }
+      allow: [".."],
+    },
   },
-  base:"/invoice-web"
+  base: "/invoice-web",
+  build: {
+    rollupOptions: {
+      input: {
+        main: "./index.html",
+      },
+    },
+  },
 });
