@@ -6,13 +6,21 @@ import PublicRoute from "../components/PublicRoute";
 
 const appRouter = createBrowserRouter([
   {
-    path: "/",
-    element: <PublicRoute><Login /></PublicRoute>,
+    path: "/invoice-web",
+    element: (
+      <PublicRoute>
+        <Login />
+      </PublicRoute>
+    ),
   },
   {
-    path: "/home",
-    element: <ProtectedRoute><Home /></ProtectedRoute>,
-  }
+    path: "/invoice-web/home",
+    element: (
+      <ProtectedRoute>
+        <Home />
+      </ProtectedRoute>
+    ),
+  },
 ]);
 
 export default appRouter;
