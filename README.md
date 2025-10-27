@@ -2,6 +2,10 @@
 
 A fully functional React application for creating and managing invoices with comprehensive form validation, PDF upload capabilities, and session management.
 
+# Password for Login:
+   User Name :Admin
+   Password:Abc@123
+
 ## Features
 
 ###  Login System
