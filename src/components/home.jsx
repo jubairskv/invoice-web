@@ -390,8 +390,8 @@ function Home() {
     try {
       // For the assets PDF, we need to fetch it and convert to base64
       fetch(invoice)
-        .then(response => response.blob())
-        .then(blob => {
+        .then((response) => response.blob())
+        .then((blob) => {
           const reader = new FileReader();
           reader.onload = function (e) {
             const fileInfo = {
@@ -403,11 +403,14 @@ function Home() {
               isAssetsFile: true, // Flag to identify this as assets file
             };
             localStorage.setItem("invoiceFileInfo", JSON.stringify(fileInfo));
-            console.log("Assets PDF file info and data saved to localStorage:", fileInfo.name);
+            console.log(
+              "Assets PDF file info and data saved to localStorage:",
+              fileInfo.name
+            );
           };
           reader.readAsDataURL(blob);
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Error fetching assets PDF:", error);
           // Fallback: save without data
           const fileInfo = {
@@ -552,8 +555,7 @@ function Home() {
             Object.keys(savedData).forEach((key) => {
               setFieldValue(key, savedData[key]);
             });
-            // Clear uploaded file to start fresh
-            clearUploadedFile();
+            // Keep the uploaded file for the next invoice
 
             // Hide popup after 5 seconds
             setTimeout(() => {
@@ -989,7 +991,7 @@ function Home() {
                                   name="totalAmount"
                                   type="number"
                                   step="0.01"
-                                  className={`w-full px-2 py-3 border-0 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white text-black ${
+                                  className={`w-full px-2 py-3 border-0   focus:outline-none bg-white text-black ${
                                     errors.totalAmount && touched.totalAmount
                                       ? "border-red-500"
                                       : ""
@@ -1218,7 +1220,7 @@ function Home() {
                                   name="lineAmount"
                                   type="number"
                                   step={expenseToggle ? "0.01" : "0.01"}
-                                  className={`w-full px-2 py-3 border-0 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white text-black ${
+                                  className={`w-full px-2 py-3 border-0  focus:outline-none bg-white text-black ${
                                     errors.lineAmount && touched.lineAmount
                                       ? "border-red-500"
                                       : ""
