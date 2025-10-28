@@ -38,16 +38,16 @@ const LoginForm = ({ onSubmit }) => {
     >
       {({ errors, touched, isSubmitting }) => (
         <Form className="w-full max-w-md font-robotoCondensed">
-          <div className="mb-6 dark:bg-[#161D31] dark:text-white">
-            <label className="block text-gray-700 text-sm font-bold mb-2 dark:bg-[#161D31] dark:text-white">
+          <div className="mb-6">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
               User Name
             </label>
-            <div className="relative dark:bg-[#161D31] dark:text-white">
+            <div className="relative">
               <Field
                 name="userName"
                 type="text"
                 placeholder="Enter User Name"
-                className="w-full px-3 py-2 border dark:bg-[#161D31] dark:text-white rounded-lg pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border rounded-lg pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <FaUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             </div>
@@ -57,15 +57,15 @@ const LoginForm = ({ onSubmit }) => {
           </div>
 
           <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-bold mb-2 dark:bg-[#161D31] dark:text-white">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
               Password
             </label>
-            <div className="relative dark:bg-[#161D31] dark:text-white">
+            <div className="relative">
               <Field
                 name="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter User Password"
-                className="w-full px-3 py-2 dark:bg-[#161D31] dark:text-white border rounded-lg pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border rounded-lg pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <div
@@ -73,9 +73,9 @@ const LoginForm = ({ onSubmit }) => {
                 onClick={togglePasswordVisibility}
               >
                 {showPassword ? (
-                  <FiEyeOff className="rounded-md dark:bg-[#161D31]" />
+                  <FiEyeOff className="rounded-md" />
                 ) : (
-                  <FiEye className="rounded-md dark:bg-[#161D31]" />
+                  <FiEye className="rounded-md" />
                 )}
               </div>
             </div>
